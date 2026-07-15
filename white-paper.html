@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en" itemscope itemtype="https://schema.org/Article">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Autonomous AI Cluster Architecture — White Paper | 2C4G to Production</title>
+<meta name="description" content="Free 11-chapter white paper on building a production-grade autonomous AI cluster on 2 vCPUs and 4GB RAM. n8n workflow engine, AI-API security, survival-first architecture.">
+<meta name="keywords" content="AI cluster, autonomous AI, n8n, docker compose, 2C4G, AI infrastructure, workflow engine, K8s, edge computing, minimalist architecture">
+<meta name="author" content="Auto-AI-Cluster Project">
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+<link rel="canonical" href="https://lu7897859-tech.github.io/auto-ai-cluster/white-paper.html">
+
+<!-- Open Graph -->
+<meta property="og:title" content="Autonomous AI Cluster Architecture — White Paper">
+<meta property="og:description" content="11 chapters. 2C4G constraint. n8n vs Airflow vs Prefect vs Temporal. Survival-first design. Free download.">
+<meta property="og:url" content="https://lu7897859-tech.github.io/auto-ai-cluster/white-paper.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Auto-AI-Cluster">
+<meta property="og:image" content="https://lu7897859-tech.github.io/auto-ai-cluster/og-image.png">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Autonomous AI Cluster Architecture — White Paper">
+<meta name="twitter:description" content="11 chapters. 2C4G constraint. n8n vs Airflow. Free download.">
+
+<!-- JSON-LD Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Autonomous AI Cluster Architecture: From 2C4G VPS to Production-Grade Deployment",
+  "description": "A complete engineering analysis of building an autonomous AI cluster under extreme 2C4G resource constraints, covering workflow engine selection, AI-API security, survival-first architecture, and self-reimplementation roadmap.",
+  "author": {
+    "@type": "Organization",
+    "name": "Auto-AI-Cluster Project",
+    "url": "https://github.com/lu7897859-tech/auto-ai-cluster"
+  },
+  "datePublished": "2026-07-15",
+  "dateModified": "2026-07-15",
+  "image": "https://lu7897859-tech.github.io/auto-ai-cluster/og-image.png",
+  "about": {
+    "@type": "Thing",
+    "name": "Autonomous AI Cluster",
+    "description": "Production-grade autonomous AI cluster designed for extreme resource efficiency"
+  },
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD",
+    "availability": "https://schema.org/InStock"
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://lu7897859-tech.github.io/auto-ai-cluster/white-paper.html"
+  },
+  "hasPart": [
+    {"@type": "Chapter", "name": "Why n8n? Workflow Engine Selection", "position": 1},
+    {"@type": "Chapter", "name": "2C4G Resource Allocation Philosophy", "position": 2},
+    {"@type": "Chapter", "name": "Docker Compose to K8s Migration Path", "position": 3},
+    {"@type": "Chapter", "name": "Network Topology & Backup Strategy", "position": 4},
+    {"@type": "Chapter", "name": "AI-API Gateway Design", "position": 5},
+    {"@type": "Chapter", "name": "Three-Layer Audit Mechanism", "position": 6},
+    {"@type": "Chapter", "name": "Minimal Logic Principle", "position": 7},
+    {"@type": "Chapter", "name": "Survival-First Principle", "position": 8},
+    {"@type": "Chapter", "name": "Self-Reimplementation Roadmap", "position": 9},
+    {"@type": "Chapter", "name": "Component Effort Estimation", "position": 10},
+    {"@type": "Chapter", "name": "7 AI Prompt Templates", "position": 11}
+  ]
+}
+</script>
+
+<!-- Breadcrumb structured data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://lu7897859-tech.github.io/auto-ai-cluster/"},
+    {"@type": "ListItem", "position": 2, "name": "White Paper", "item": "https://lu7897859-tech.github.io/auto-ai-cluster/white-paper.html"}
+  ]
+}
+</script>
+
+<style>
+:root { --bg: #0d1117; --card: #161b22; --border: #30363d; --text: #c9d1d9; --accent: #58a6ff; --green: #3fb950; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+.container { max-width: 800px; margin: 0 auto; padding: 0 20px; }
+header { padding: 48px 0 24px; border-bottom: 1px solid var(--border); }
+h1 { font-size: 2rem; font-weight: 600; color: #fff; margin-bottom: 12px; }
+.subtitle { font-size: 1.05rem; color: #8b949e; margin-bottom: 20px; }
+.meta { font-size: 13px; color: #484f58; margin-bottom: 24px; }
+.meta span { margin-right: 16px; }
+.cta-box { background: linear-gradient(135deg, #0d4192 0%, #1f6feb 100%); border-radius: 10px; padding: 28px; text-align: center; margin: 24px 0; }
+.cta-box h2 { font-size: 1.3rem; color: #fff; margin-bottom: 8px; }
+.cta-box p { color: rgba(255,255,255,.8); margin-bottom: 16px; font-size: 14px; }
+.btn { display: inline-block; padding: 12px 28px; border-radius: 6px; font-size: 15px; font-weight: 600; text-decoration: none; transition: .2s; }
+.btn-primary { background: #fff; color: #0d4192; margin-right: 10px; }
+.btn-primary:hover { background: #e6edff; }
+.btn-outline { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,.4); }
+.btn-outline:hover { border-color: #fff; }
+section { padding: 40px 0; border-bottom: 1px solid var(--border); }
+h2 { font-size: 1.4rem; font-weight: 600; color: #fff; margin-bottom: 16px; }
+h3 { font-size: 1.1rem; font-weight: 600; color: #f0f6fc; margin: 20px 0 8px; }
+.chapter-list { list-style: none; }
+.chapter-list li { padding: 10px 0; border-bottom: 1px solid #21262d; display: flex; align-items: baseline; }
+.chapter-num { color: var(--accent); font-weight: 600; min-width: 40px; font-size: 14px; }
+.chapter-title { color: var(--text); font-size: 14px; }
+.chapter-desc { color: #8b949e; font-size: 13px; margin-left: auto; display: none; }
+p { color: #8b949e; font-size: 14px; margin-bottom: 12px; }
+ul { padding-left: 20px; color: #8b949e; font-size: 14px; margin-bottom: 12px; }
+ul li { margin: 6px 0; }
+a { color: var(--accent); }
+code { background: #21262d; padding: 2px 6px; border-radius: 4px; font-size: 13px; }
+table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px; }
+th { text-align: left; color: #f0f6fc; padding: 10px 12px; border-bottom: 2px solid var(--border); background: #1c2128; }
+td { padding: 10px 12px; border-bottom: 1px solid #21262d; color: #8b949e; }
+footer { padding: 32px 0; text-align: center; color: #484f58; font-size: 13px; }
+.download-links { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+@media (max-width: 640px) { h1 { font-size: 1.5rem; } .cta-box { padding: 20px; } }
+</style>
+</head>
+<body>
+<div class="container">
+
+<header>
+  <h1>Autonomous AI Cluster Architecture</h1>
+  <div class="subtitle">From 2C4G VPS to Production-Grade Deployment — An 11-Chapter Engineering White Paper</div>
+  <div class="meta">
+    <span>📄 11 chapters · ~20 pages</span>
+    <span>📦 36.9 KB PDF</span>
+    <span>💰 Free download</span>
+    <span>📅 Published 2026-07-15</span>
+  </div>
+</header>
+
+<div class="cta-box">
+  <h2>📥 Free Download</h2>
+  <p>Full white paper PDF with all 11 chapters, architecture diagrams, and 7 AI prompt templates</p>
+  <div class="download-links">
+    <a class="btn btn-primary" href="https://github.com/lu7897859-tech/auto-ai-cluster/releases/download/v1.0.0/Form-B-Architecture-Paper.pdf">⬇ Download PDF (GitHub)</a>
+    <a class="btn btn-outline" href="https://jsonproxy.3g.qq.com/urlmapper/1vwce6">⬇ Mirror Download</a>
+  </div>
+</div>
+
+<section>
+  <h2>📋 Executive Summary</h2>
+  <p>This white paper documents the complete engineering journey of building a production-grade autonomous AI cluster under extreme resource constraints — <strong>2 vCPUs and 4GB RAM</strong> (a $5/month VPS).</p>
+  <p>Instead of starting with "what's the industry standard?", every decision is grounded in <strong>first principles</strong>: What's the physical minimum? What can we eliminate? What breaks first under load?</p>
+  <p>The result is a <strong>7-service Docker Compose cluster</strong> — n8n, PostgreSQL, Redis, Nginx, AI-API Gateway, Authorization Server, pgAdmin — that deploys with a single command and survives production traffic.</p>
+  <p>🏗️ <strong>Full source code available</strong>: <a href="https://github.com/lu7897859-tech/auto-ai-cluster">github.com/lu7897859-tech/auto-ai-cluster</a></p>
+</section>
+
+<section>
+  <h2>📑 Table of Contents (11 Chapters)</h2>
+  <ul class="chapter-list">
+    <li><span class="chapter-num">Ch.1</span> <span class="chapter-title">Why n8n? — Workflow Engine Selection</span></li>
+    <li><span class="chapter-num">Ch.2</span> <span class="chapter-title">2C4G Resource Allocation Philosophy</span></li>
+    <li><span class="chapter-num">Ch.3</span> <span class="chapter-title">Docker Compose → K8s Migration Path</span></li>
+    <li><span class="chapter-num">Ch.4</span> <span class="chapter-title">Network Topology &amp; Backup Strategy</span></li>
+    <li><span class="chapter-num">Ch.5</span> <span class="chapter-title">Why AI-API Gateway?</span></li>
+    <li><span class="chapter-num">Ch.6</span> <span class="chapter-title">Three-Layer Audit Mechanism</span></li>
+    <li><span class="chapter-num">Ch.7</span> <span class="chapter-title">Minimal Logic Principle</span></li>
+    <li><span class="chapter-num">Ch.8</span> <span class="chapter-title">Survival-First Principle</span></li>
+    <li><span class="chapter-num">Ch.9</span> <span class="chapter-title">Self-Reimplementation Roadmap</span></li>
+    <li><span class="chapter-num">Ch.10</span> <span class="chapter-title">Component Effort Estimation</span></li>
+    <li><span class="chapter-num">Ch.11</span> <span class="chapter-title">7 Complete AI Prompt Templates</span></li>
+  </ul>
+</section>
+
+<section>
+  <h2>⚡ Key Engineering Decisions</h2>
+
+  <h3>Engine Selection: Why n8n Won</h3>
+  <table>
+    <tr><th>Engine</th><th>Cost</th><th>2C4G Fit</th><th>Ecosystem</th></tr>
+    <tr><td>n8n</td><td>Free (self-hosted)</td><td>✅ ~80MB RAM</td><td>Python-native</td></tr>
+    <tr><td>Airflow</td><td>Free</td><td>⚠️ 500MB+ scheduler</td><td>Python</td></tr>
+    <tr><td>Prefect</td><td>Cloud $0-$$$</td><td>⚠️ 300MB agent</td><td>Python</td></tr>
+    <tr><td>Temporal</td><td>Free</td><td>❌ 800MB+ server</td><td>Multi-language</td></tr>
+  </table>
+  <p>n8n's memory footprint (~80MB idle) was the decisive factor. At 2C4G, every MB matters.</p>
+
+  <h3>Survival-First Circuit Breaker</h3>
+  <p>Priority-based resource release under memory pressure:</p>
+  <ul>
+    <li><strong>Tier 1 (Never kill):</strong> n8n + PostgreSQL</li>
+    <li><strong>Tier 2 (Graceful degrade):</strong> Redis cache</li>
+    <li><strong>Tier 3 (Rate limit → queue → fail open):</strong> AI-API gateway</li>
+    <li><strong>Tier 4 (Nice to have):</strong> Monitoring, pgAdmin</li>
+  </ul>
+
+  <h3>Authorization System</h3>
+  <p>RSA-2048 key pair + machine fingerprint binding. 998 lines of Python, 6 API endpoints, all tested. Supports distributor ID embedding and activation reporting. 7-day offline cache for intermittent connectivity.</p>
+</section>
+
+<section>
+  <h2>💡 Who This Is For</h2>
+  <ul>
+    <li><strong>Engineers</strong> building AI workflow systems on a budget</li>
+    <li><strong>Founders</strong> prototyping AI infrastructure before raising</li>
+    <li><strong>DevOps</strong> looking for a reference architecture for n8n deployment</li>
+    <li><strong>Researchers</strong> studying resource-constrained distributed systems</li>
+    <li><strong>Anyone</strong> who thinks "but we've always done it this way" is not a valid argument</li>
+  </ul>
+</section>
+
+<section>
+  <h2>🔗 All Links</h2>
+  <table>
+    <tr><th>Resource</th><th>URL</th></tr>
+    <tr><td>GitHub Repository</td><td><a href="https://github.com/lu7897859-tech/auto-ai-cluster">github.com/lu7897859-tech/auto-ai-cluster</a></td></tr>
+    <tr><td>White Paper (PDF)</td><td><a href="https://github.com/lu7897859-tech/auto-ai-cluster/releases/download/v1.0.0/Form-B-Architecture-Paper.pdf">Download from GitHub Release</a></td></tr>
+    <tr><td>Mirror Download</td><td><a href="https://jsonproxy.3g.qq.com/urlmapper/1vwce6">CDN Mirror</a></td></tr>
+    <tr><td>Release Notes</td><td><a href="https://github.com/lu7897859-tech/auto-ai-cluster/releases/tag/v1.0.0">v1.0.0 Release</a></td></tr>
+    <tr><td>English README</td><td><a href="https://github.com/lu7897859-tech/auto-ai-cluster/blob/main/README-EN.md">README-EN.md</a></td></tr>
+  </table>
+</section>
+
+<div class="cta-box">
+  <h2>📥 Download the White Paper</h2>
+  <p>11 chapters · Free · No email required</p>
+  <div class="download-links">
+    <a class="btn btn-primary" href="https://github.com/lu7897859-tech/auto-ai-cluster/releases/download/v1.0.0/Form-B-Architecture-Paper.pdf">⬇ Download PDF</a>
+    <a class="btn btn-outline" href="https://github.com/lu7897859-tech/auto-ai-cluster">⭐ Star on GitHub</a>
+  </div>
+</div>
+
+<footer>
+  <p>Auto-AI-Cluster · AGPLv3 License · Free to use, modify, and distribute</p>
+  <p><a href="https://github.com/lu7897859-tech/auto-ai-cluster">GitHub</a> · <a href="https://lu7897859-tech.github.io/auto-ai-cluster/">Project Page</a></p>
+</footer>
+
+</div>
+</body>
+</html>
