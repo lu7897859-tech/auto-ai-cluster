@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Auto-AI-Cluster · 自主AI集群</title>
+<style>
+:root { --bg: #0d1117; --card: #161b22; --border: #30363d; --text: #c9d1d9; --accent: #58a6ff; --green: #3fb950; --orange: #d29922; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+.container { max-width: 960px; margin: 0 auto; padding: 0 20px; }
+header { padding: 48px 0 32px; border-bottom: 1px solid var(--border); }
+h1 { font-size: 2.5rem; font-weight: 600; color: #fff; }
+h1 span { color: var(--accent); }
+.tagline { font-size: 1.05rem; color: #8b949e; margin-top: 8px; }
+.buttons { margin-top: 20px; display: flex; gap: 12px; flex-wrap: wrap; }
+.btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border-radius: 6px; font-size: 14px; font-weight: 500; text-decoration: none; border: 1px solid var(--border); transition: .2s; }
+.btn-primary { background: #238636; color: #fff; border-color: rgba(240,246,252,.1); }
+.btn-primary:hover { background: #2ea043; }
+.btn-outline { color: var(--text); background: transparent; }
+.btn-outline:hover { border-color: #8b949e; }
+section { padding: 48px 0; border-bottom: 1px solid var(--border); }
+h2 { font-size: 1.5rem; font-weight: 600; color: #fff; margin-bottom: 20px; }
+h3 { font-size: 1.1rem; font-weight: 600; color: #f0f6fc; margin: 16px 0 8px; }
+.cards { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 20px; }
+.card h3 { margin-top: 0; }
+.badge { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 10px; font-weight: 600; }
+.badge-free { background: #1b3a2b; color: var(--green); }
+.badge-paid { background: #3d2e00; color: var(--orange); }
+.price { font-size: 14px; color: #8b949e; margin: 8px 0; }
+.price strong { color: var(--text); font-size: 16px; }
+ul { padding-left: 20px; color: #8b949e; font-size: 14px; }
+ul li { margin: 4px 0; }
+a { color: var(--accent); }
+.download-box { background: var(--card); border: 1px solid var(--accent); border-radius: 8px; padding: 24px; text-align: center; }
+.download-box .btn { margin-top: 12px; }
+.stats { display: flex; gap: 32px; margin-top: 16px; }
+.stat { text-align: center; }
+.stat-num { font-size: 1.8rem; font-weight: 600; color: #fff; }
+.stat-label { font-size: 12px; color: #8b949e; }
+footer { padding: 32px 0; text-align: center; color: #484f58; font-size: 13px; }
+@media (max-width: 640px) { .cards { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="container">
+
+<header>
+  <h1>Auto-AI-<span>Cluster</span></h1>
+  <div class="tagline">零成本构建的生产级自主AI集群 · 从架构白皮书到可部署工程产品</div>
+  <div class="buttons">
+    <a class="btn btn-primary" href="https://github.com/lu7897859-tech/auto-ai-cluster">📦 GitHub 仓库</a>
+    <a class="btn btn-outline" href="https://jsonproxy.3g.qq.com/urlmapper/1vwce6">📄 白皮书 PDF</a>
+    <a class="btn btn-outline" href="https://lu7897859-tech.github.io/auto-ai-cluster/">🏠 项目主页</a>
+  </div>
+  <div class="stats">
+    <div class="stat"><div class="stat-num">54</div><div class="stat-label">文件</div></div>
+    <div class="stat"><div class="stat-num">481KB</div><div class="stat-label">项目大小</div></div>
+    <div class="stat"><div class="stat-num">11</div><div class="stat-label">白皮书章节</div></div>
+  </div>
+</header>
+
+<section>
+<h2>📦 产品矩阵</h2>
+<div class="cards">
+  <div class="card">
+    <h3>Form-A · Docker Compose</h3>
+    <span class="badge badge-free">免费</span>
+    <p class="price">7服务集群：n8n + Redis + PostgreSQL + Nginx + AI-Gateway + Auth + pgAdmin</p>
+    <ul>
+      <li>一键 bash deploy.sh 部署</li>
+      <li>2C4G 极限资源约束设计</li>
+      <li>内置熔断与自恢复机制</li>
+      <li>Healthcheck + restart: always</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h3>Form-A · K8s Enterprise</h3>
+    <span class="badge badge-paid">¥49,800</span>
+    <p class="price">生产级 K8s Helm Chart部署</p>
+    <ul>
+      <li>Patroni+etcd 高可用 PG</li>
+      <li>HPA 自动扩缩容</li>
+      <li>EFK 日志聚合</li>
+      <li>企业授权系统集成</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h3>Authorization System</h3>
+    <span class="badge badge-free">社区内置</span>
+    <p class="price">RSA-2048 + 机器指纹绑定</p>
+    <ul>
+      <li>998 行 · 6 个 API 全部实测通过</li>
+      <li>分销 ID 嵌入 + 激活上报</li>
+      <li>7 天离线缓存</li>
+      <li>Docker 一键运行</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h3>Form-B · 架构白皮书</h3>
+    <span class="badge badge-free">免费下载</span>
+    <p class="price">~~¥2,980~~ 限时免费</p>
+    <ul>
+      <li>11章 · 4 部分完整架构解析</li>
+      <li>n8n vs Airflow/Prefect/Temporal 对比</li>
+      <li>2C4G 资源分配哲学</li>
+      <li>7 个完整 AI 提示词模板</li>
+    </ul>
+  </div>
+</div>
+</section>
+
+<section>
+<h2>📄 架构白皮书</h2>
+<div class="download-box">
+  <h3>Form-B · 自主AI集群架构白皮书</h3>
+  <p style="color:#8b949e; margin: 8px 0;">系统架构深度拆解 · AI-API安全三层审核 · 最小逻辑原则 · 自研重构路线图</p>
+  <p style="font-size: 13px; color: #484f58;">PDF · 36.9 KB · 约20页</p>
+  <a class="btn btn-primary" href="https://jsonproxy.3g.qq.com/urlmapper/1vwce6">⬇ 下载白皮书 PDF</a>
+</div>
+</section>
+
+<section>
+<h2>🚀 快速开始</h2>
+<pre style="background: #161b22; padding: 16px; border-radius: 8px; border: 1px solid var(--border); overflow-x: auto; font-size: 13px; color: #8b949e;">
+<code># 克隆社区版
+git clone https://github.com/lu7897859-tech/auto-ai-cluster.git
+cd auto-ai-cluster/Form-A-Code-Product/01-Docker-Compose-Community
+
+# 配置环境
+cp .env.example .env
+# 编辑 .env 填入你的 API Key
+
+# 一键部署
+bash deploy.sh</code></pre>
+<p style="margin-top: 8px;"><a href="https://github.com/lu7897859-tech/auto-ai-cluster">→ 了解更多</a></p>
+</section>
+
+<section>
+<h2>🧠 核心思想</h2>
+<div class="cards">
+  <div class="card">
+    <h3>存续优先</h3>
+    <p style="font-size: 13px; color: #8b949e;">核心业务流程优先于非核心。熔断机制按优先级释放非关键服务，确保 n8n + PostgreSQL 永不中断。</p>
+  </div>
+  <div class="card">
+    <h3>最小逻辑</h3>
+    <p style="font-size: 13px; color: #8b949e;">每个组件必须在 A4 纸上画完架构图。系统存活概率 ∝ 1 / (模块数 × 接口数 × 状态数)。</p>
+  </div>
+  <div class="card">
+    <h3>2C4G 驱动</h3>
+    <p style="font-size: 13px; color: #8b949e;">极限条件催生更好的设计。每个服务只做一件事，避免现代 AI 基础设施的膨胀。</p>
+  </div>
+  <div class="card">
+    <h3>第一性原理</h3>
+    <p style="font-size: 13px; color: #8b949e;">不做"这是行业标准"，只做"这是物理极限内最好的方案"。n8n 胜出是因为轻量，不是因为它流行。</p>
+  </div>
+</div>
+</section>
+
+<footer>
+<p>Auto-AI-Cluster · 社区版 AGPLv3 · 企业版与 Form-B 需单独授权</p>
+<p><a href="https://github.com/lu7897859-tech/auto-ai-cluster">GitHub</a> · <a href="https://jsonproxy.3g.qq.com/urlmapper/1vwce6">白皮书</a></p>
+</footer>
+
+</div>
+</body>
+</html>
