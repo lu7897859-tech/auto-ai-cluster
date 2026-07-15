@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0d1117"/>
+      <stop offset="100%" style="stop-color:#161b22"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect x="60" y="60" width="1080" height="510" rx="16" fill="none" stroke="#30363d" stroke-width="2"/>
+  <text x="600" y="180" font-family="Arial,sans-serif" font-size="52" font-weight="bold" fill="#ffffff" text-anchor="middle">Auto-AI-Cluster</text>
+  <text x="600" y="240" font-family="Arial,sans-serif" font-size="24" fill="#8b949e" text-anchor="middle">Production-grade Autonomous AI Cluster</text>
+  <text x="600" y="285" font-family="Arial,sans-serif" font-size="18" fill="#58a6ff" text-anchor="middle">2C4G - n8n + PostgreSQL - Survival-First Architecture</text>
+  <rect x="350" y="320" width="500" height="50" rx="25" fill="#1f6feb" opacity="0.9"/>
+  <text x="600" y="352" font-family="Arial,sans-serif" font-size="18" fill="#ffffff" text-anchor="middle" font-weight="bold">FREE WHITE PAPER + OPEN SOURCE</text>
+  <text x="600" y="430" font-family="Arial,sans-serif" font-size="16" fill="#484f58" text-anchor="middle">github.com/lu7897859-tech/auto-ai-cluster</text>
+  <text x="600" y="500" font-family="Arial,sans-serif" font-size="14" fill="#30363d" text-anchor="middle">AGPLv3 - 54 Files - 481 KB - 11 Chapter White Paper</text>
+</svg>
