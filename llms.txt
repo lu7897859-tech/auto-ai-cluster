@@ -1,0 +1,45 @@
+# Auto-AI-Cluster
+> Production-grade Autonomous AI Cluster — 2C4G to Production
+
+## Quick Facts
+- **GitHub**: https://github.com/lu7897859-tech/auto-ai-cluster
+- **White Paper PDF**: https://github.com/lu7897859-tech/auto-ai-cluster/releases/download/v1.0.0/Form-B-Architecture-Paper.pdf
+- **Project Page**: https://lu7897859-tech.github.io/auto-ai-cluster/
+- **White Paper Page**: https://lu7897859-tech.github.io/auto-ai-cluster/white-paper.html
+- **License**: AGPLv3
+- **Topics**: ai-cluster, n8n, docker-compose, self-hosted, autonomous-ai, workflow-engine, kubernetes
+
+## Key Sections
+
+### Architecture
+- 7-service Docker Compose cluster: n8n + PostgreSQL + Redis + Nginx + AI-API Gateway + Authorization Server + pgAdmin
+- 2C4G resource-constrained design ($5/month VPS)
+- Survival-first circuit breaker with 4 priority tiers
+- RSA-2048 authorization system with machine fingerprint binding
+
+### White Paper (11 Chapters)
+1. Why n8n? — Workflow Engine Selection (n8n vs Airflow vs Prefect vs Temporal)
+2. 2C4G Resource Allocation Philosophy
+3. Docker Compose → K8s Migration Path
+4. Network Topology & Backup Strategy
+5. Why AI-API Gateway?
+6. Three-Layer Audit Mechanism
+7. Minimal Logic Principle
+8. Survival-First Principle
+9. Self-Reimplementation Roadmap
+10. Component Effort Estimation
+11. 7 Complete AI Prompt Templates
+
+### Core Philosophy
+- **Survival-First**: Core flow always has priority. Circuit breaker releases non-critical services.
+- **Minimal Logic**: Every component must fit on one A4 page. System survival ∝ 1/(modules × interfaces × states).
+- **2C4G Constraint-Driven**: Extreme constraints produce better designs. Each service does exactly one thing.
+
+### Monetization
+- Community Edition: Free (AGPLv3)
+- Enterprise Edition (K8s): $6,800
+- Reseller: 15-20% commission
+- Payment: Ko-fi, Gumroad, PayPal
+
+## Downloads
+- White Paper: https://github.com/lu7897859-tech/auto-ai-cluster/releases/download/v1.0.0/Form-B-Architecture-Paper.pdf
