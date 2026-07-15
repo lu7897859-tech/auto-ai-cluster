@@ -1,0 +1,12 @@
+# Form-A 授权验证服务 (auth-server) 依赖
+# Python 3.11+
+
+# Web 框架
+Flask==3.0.0
+
+# RSA 加密与签名
+cryptography==42.0.0
+
+# （可选）生产环境推荐
+# gunicorn==21.2.0
+# gevent==24.2.1
