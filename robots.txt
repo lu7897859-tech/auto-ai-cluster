@@ -1,0 +1,21 @@
+User-agent: *
+Allow: /
+Allow: /white-paper.html
+Allow: /schema.jsonld
+Sitemap: https://lu7897859-tech.github.io/auto-ai-cluster/sitemap.xml
+
+# AI crawlers — full access
+User-agent: GPTBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
