@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Auto-AI-Cluster</title>
+    <description>Production-grade autonomous AI cluster for 2C4G VPS. Architecture white paper + open source code.</description>
+    <link>https://lu7897859-tech.github.io/auto-ai-cluster/</link>
+    <atom:link href="https://lu7897859-tech.github.io/auto-ai-cluster/feed.xml" rel="self" type="application/rss+xml"/>
+    <lastBuildDate>Wed, 15 Jul 2026 12:00:00 GMT</lastBuildDate>
+    <language>en</language>
+    <item>
+      <title>v1.0.0 Release — Auto-AI-Cluster</title>
+      <link>https://github.com/lu7897859-tech/auto-ai-cluster/releases/tag/v1.0.0</link>
+      <description>First public release with Docker Compose Community Edition, K8s Enterprise, Authorization System, Distributor Tools, and 11-chapter Architecture White Paper.</description>
+      <pubDate>Wed, 15 Jul 2026 12:00:00 GMT</pubDate>
+      <guid isPermaLink="true">https://github.com/lu7897859-tech/auto-ai-cluster/releases/tag/v1.0.0</guid>
+      <enclosure url="https://github.com/lu7897859-tech/auto-ai-cluster/releases/download/v1.0.0/Form-B-Architecture-Paper.pdf" length="37780" type="application/pdf"/>
+    </item>
+    <item>
+      <title>Architecture White Paper Published</title>
+      <link>https://lu7897859-tech.github.io/auto-ai-cluster/white-paper.html</link>
+      <description>11-chapter engineering white paper on building autonomous AI clusters under 2C4G constraints. Free download.</description>
+      <pubDate>Wed, 15 Jul 2026 12:00:00 GMT</pubDate>
+      <guid isPermaLink="true">https://lu7897859-tech.github.io/auto-ai-cluster/white-paper.html</guid>
+    </item>
+  </channel>
+</rss>
