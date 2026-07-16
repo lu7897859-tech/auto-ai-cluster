@@ -1,55 +1,47 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Auto-AI-Cluster Technical Blog | Auto-AI-Cluster Blog</title>
-<meta name="description" content="Most AI infrastructure today is designed backwards. Engineers start with the ideal architecture 鈥?Kubernetes, GPU cluste">
 <meta name="robots" content="index,follow">
-<link rel="canonical" href="https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/survival-first-architecture.html">
-<meta property="og:title" content="Auto-AI-Cluster Technical Blog">
-<meta property="og:description" content="Most AI infrastructure today is designed backwards. Engineers start with the ideal architecture 鈥?Kubernetes, GPU cluste">
 <meta property="og:image" content="https://lu7897859-tech.github.io/auto-ai-cluster/og-image.svg">
-<meta name="twitter:card" content="summary_large_image">
-<style>body{max-width:800px;margin:0 auto;padding:20px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.6;color:#c9d1d9;background:#0d1117;}h1{color:#58a6ff}h2{color:#3fb950}h3{color:#d2a8ff}a{color:#58a6ff}pre{background:#161b22;padding:16px;border-radius:8px;overflow-x:auto}code{background:#161b22;padding:2px 6px;border-radius:4px}ul{padding-left:20px}li{margin:8px 0}</style>
+<style>body{max-width:800px;margin:0 auto;padding:20px;font-family:-apple-system,sans-serif;line-height:1.6;color:#c9d1d9;background:#0d1117}h1{color:#58a6ff}h2{color:#3fb950}h3{color:#d2a8ff}a{color:#58a6ff}pre{background:#161b22;padding:16px;border-radius:8px;overflow-x:auto}code{background:#161b22;padding:2px 6px;border-radius:4px}p{margin:16px 0}</style>
 </head>
 <body>
-<nav><a href="https://lu7897859-tech.github.io/auto-ai-cluster/">鈫?Home</a> | <a href="https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/index.html">Blog</a></nav>
-<p><p><h1>Auto-AI-Cluster Technical Blog</h1></p></p>
+<nav><a href="https://lu7897859-tech.github.io/auto-ai-cluster/">Home</a> | <a href="https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/index.html">Blog</a></nav>
+<h1>Auto-AI-Cluster Technical Blog</h1>
 
-<p>## The Survival-First Architecture: Why AI Clusters Must Think Like Organisms</p>
+<h2>The Survival-First Architecture: Why AI Clusters Must Think Like Organisms</h2>
 
 <p><strong>2026-07-16</strong></p>
 
-<p>Most AI infrastructure today is designed backwards. Engineers start with the ideal architecture 鈥?Kubernetes, GPU clusters, distributed databases 鈥?and then try to squeeze it onto available hardware. This is like designing a Formula 1 car and then asking "can we drive it on this dirt road?"</p>
+<p>Most AI infrastructure today is designed backwards. Engineers start with the ideal architecture — Kubernetes, GPU clusters, distributed databases — and then try to squeeze it onto available hardware. This is like designing a Formula 1 car and then asking "can we drive it on this dirt road?"</p>
 
 <p>At 2C4G (2 vCPUs, 4GB RAM), you don't have the luxury of abstraction. Every container, every service, every background job must justify its memory budget. This is where Survival-First architecture comes in.</p>
 
-<p>### The Core Insight</p>
+<h3>The Core Insight</h3>
 <p>An autonomous AI cluster at this scale cannot afford:</p>
-<p>- Overprovisioned services (wasted memory)</p>
-<p>- Heavy orchestration layers (Kubernetes alone eats 1-2GB)</p>
-<p>- Idle workers burning RAM waiting for tasks</p>
-<p>- Traditional database replication (PostgreSQL at 2GB RAM needs careful tuning)</p>
+- Overprovisioned services (wasted memory)
+- Heavy orchestration layers (Kubernetes alone eats 1-2GB)
+- Idle workers burning RAM waiting for tasks
+- Traditional database replication (PostgreSQL at 2GB RAM needs careful tuning)
 
-<p>### What We Built Instead</p>
+<h3>What We Built Instead</h3>
 <p>The Auto-AI-Cluster uses a <strong>minimal viable orchestration</strong> approach:</p>
-<p>1. Docker Compose as the control plane (0 memory overhead vs K8s)</p>
-<p>2. n8n as the workflow engine (Rust-backed, <50MB idle)</p>
-<p>3. PostgreSQL with survival-first configuration (shared_buffers=512MB, effective_cache_size=1GB)</p>
-<p>4. Health-check self-preservation loop (auto-restart on OOM)</p>
-<p>5. Graceful degradation: when memory hits 85%, non-critical workflows pause</p>
+1. Docker Compose as the control plane (0 memory overhead vs K8s)
+2. n8n as the workflow engine (Rust-backed, <50MB idle)
+3. PostgreSQL with survival-first configuration (shared_buffers=512MB, effective_cache_size=1GB)
+4. Health-check self-preservation loop (auto-restart on OOM)
+5. Graceful degradation: when memory hits 85%, non-critical workflows pause
 
 <p>The result? A fully autonomous AI agent cluster running comfortably on a $5/month VPS.</p>
 
-<p>[Read more about the architecture](/auto-ai-cluster/white-paper.html)</p>
-<p>[Deploy your own](/auto-ai-cluster/)</p>
+<a href="/auto-ai-cluster/white-paper.html">Read more about the architecture</a>
+<a href="/auto-ai-cluster/">Deploy your own</a>
 
 
 <hr>
-<footer>
-<p>Part of <a href="https://github.com/lu7897859-tech/auto-ai-cluster">Auto-AI-Cluster</a> 鈥?open source autonomous AI cluster framework.</p>
-<p><a href="https://github.com/lu7897859-tech/auto-ai-cluster/releases/download/v1.0.0/Form-B-Architecture-Paper.pdf">Download the White Paper (PDF)</a></p>
-</footer>
+<footer><p>Part of <a href="https://github.com/lu7897859-tech/auto-ai-cluster">Auto-AI-Cluster</a> — <a href="https://github.com/lu7897859-tech/auto-ai-cluster/releases/download/v1.0.0/Form-B-Architecture-Paper.pdf">Download the White Paper (PDF)</a></p></footer>
 </body>
 </html>
