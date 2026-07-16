@@ -1,0 +1,71 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Auto-AI-Cluster 鎶€鏈枃绔? | Auto-AI-Cluster Blog</title>
+<meta name="description" content="Setting up n8n with PostgreSQL on a 2C4G VPS requires careful resource allocation. Here's the exact configuration we use">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/02-n8n-postgres-2c4g.html">
+<meta property="og:title" content="Auto-AI-Cluster 鎶€鏈枃绔?">
+<meta property="og:description" content="Setting up n8n with PostgreSQL on a 2C4G VPS requires careful resource allocation. Here's the exact configuration we use">
+<meta property="og:image" content="https://lu7897859-tech.github.io/auto-ai-cluster/og-image.svg">
+<meta name="twitter:card" content="summary_large_image">
+<style>body{max-width:800px;margin:0 auto;padding:20px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.6;color:#c9d1d9;background:#0d1117;}h1{color:#58a6ff}h2{color:#3fb950}h3{color:#d2a8ff}a{color:#58a6ff}pre{background:#161b22;padding:16px;border-radius:8px;overflow-x:auto}code{background:#161b22;padding:2px 6px;border-radius:4px}ul{padding-left:20px}li{margin:8px 0}</style>
+</head>
+<body>
+<nav><a href="https://lu7897859-tech.github.io/auto-ai-cluster/">鈫?Home</a> | <a href="https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/index.html">Blog</a></nav>
+<p><p><h1>Auto-AI-Cluster 鎶€鏈枃绔?</h1></p></p>
+<p>## 02 鈥?Deploying n8n with PostgreSQL on 2C4G VPS: A Production Setup</p>
+
+<p><strong>2026-07-16</strong></p>
+
+<p>Setting up n8n with PostgreSQL on a 2C4G VPS requires careful resource allocation. Here's the exact configuration we use in production.</p>
+
+<p>### Memory Budget Breakdown</p>
+<p><code> Service </code> Memory <code> Percentage </code></p>
+<p><code>---------</code>--------<code>------------</code></p>
+<p><code> PostgreSQL </code> 768MB <code> 24% </code></p>
+<p><code> n8n (main) </code> 256MB <code> 8% </code></p>
+<p><code> n8n worker </code> 128MB <code> 4% </code></p>
+<p><code> Nginx reverse proxy </code> 48MB <code> 1.5% </code></p>
+<p><code> Health check agent </code> 32MB <code> 1% </code></p>
+<p><code> OS + buffers </code> ~2GB <code> 61.5% </code></p>
+
+<p>### PostgreSQL Tuning for 2C4G</p>
+<pre><code>
+shared_buffers = 512MB
+effective_cache_size = 1GB
+work_mem = 32MB
+maintenance_work_mem = 128MB
+effective_io_concurrency = 200
+wal_buffers = 16MB
+max_worker_processes = 4
+max_parallel_workers = 2
+<pre><code>
+
+<p>### n8n Configuration</p>
+<pre><code>
+environment:
+  - N8N_PORT=5678
+  - DB_TYPE=postgresdb
+  - DB_POSTGRESDB_HOST=postgres
+  - N8N_EXECUTIONS_TIMEOUT=120
+  - N8N_EXECUTIONS_DATA_PRUNE=true
+  - N8N_EXECUTIONS_DATA_MAX_AGE=72
+<pre><code>
+
+<p>### Why This Works</p>
+<p>At 2C4G, PostgreSQL consumes ~3.7% of total available compute cycles per query. With proper indexing and the survival-first health loop, this setup runs continuously for months without intervention.</p>
+
+<p>鈫?[Full docker-compose.yml](https://github.com/lu7897859-tech/auto-ai-cluster)</p>
+<p>鈫?[Architecture white paper](/auto-ai-cluster/white-paper.html)</p>
+
+
+<hr>
+<footer>
+<p>Part of <a href="https://github.com/lu7897859-tech/auto-ai-cluster">Auto-AI-Cluster</a> 鈥?open source autonomous AI cluster framework.</p>
+<p><a href="https://github.com/lu7897859-tech/auto-ai-cluster/releases/download/v1.0.0/Form-B-Architecture-Paper.pdf">Download the White Paper (PDF)</a></p>
+</footer>
+</body>
+</html>
