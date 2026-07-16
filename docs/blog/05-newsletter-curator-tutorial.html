@@ -1,0 +1,64 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>05 鈥?Zero-to-Hero: Building an AI Newsletter Curator on a $5 VPS | Auto-AI-Cluster Blog</title>
+<meta name="description" content="This is a complete tutorial showing how to build an AI-powered newsletter curator using n8n + DeepSeek API on a 2C4G VPS">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/05-newsletter-curator-tutorial.html">
+<meta property="og:title" content="05 鈥?Zero-to-Hero: Building an AI Newsletter Curator on a $5 VPS">
+<meta property="og:description" content="This is a complete tutorial showing how to build an AI-powered newsletter curator using n8n + DeepSeek API on a 2C4G VPS">
+<meta property="og:image" content="https://lu7897859-tech.github.io/auto-ai-cluster/og-image.svg">
+<meta name="twitter:card" content="summary_large_image">
+<style>body{max-width:800px;margin:0 auto;padding:20px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.6;color:#c9d1d9;background:#0d1117;}h1{color:#58a6ff}h2{color:#3fb950}h3{color:#d2a8ff}a{color:#58a6ff}pre{background:#161b22;padding:16px;border-radius:8px;overflow-x:auto}code{background:#161b22;padding:2px 6px;border-radius:4px}ul{padding-left:20px}li{margin:8px 0}</style>
+</head>
+<body>
+<nav><a href="https://lu7897859-tech.github.io/auto-ai-cluster/">鈫?Home</a> | <a href="https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/index.html">Blog</a></nav>
+<p><p><h1>05 鈥?Zero-to-Hero: Building an AI Newsletter Curator on a $5 VPS</h1></p></p>
+
+<p><strong>2026-07-16</strong></p>
+
+<p>This is a complete tutorial showing how to build an AI-powered newsletter curator using n8n + DeepSeek API on a 2C4G VPS.</p>
+
+<p>## The Workflow</p>
+<pre><code>
+Input           鈫?RSS feeds (5 sources)
+Processing      鈫?DeepSeek API summarizes each article
+Filtering       鈫?Relevance scoring (custom logic)
+Formatting      鈫?HTML email template
+Delivery        鈫?SMTP to subscribers
+Scheduling      鈫?Every morning at 6:00 AM
+<pre><code>
+
+<p>## n8n Workflow Design</p>
+<pre><code>
+1. RSS Feed Read 鈫?one trigger node
+2. Loop Over Items 鈫?splitInBatches
+3. HTTP Request (DeepSeek API) 鈫?summarize in 3 sentences
+4. Code Node 鈫?relevance scoring
+5. IF Node 鈫?filter out score < 3
+6. HTML Template 鈫?format for email
+7. Email (SMTP) 鈫?send to list
+<pre><code>
+
+<p>## Resource Impact</p>
+<p><code> Metric </code> Value <code></p>
+<p><code> CPU per run </code> ~8 seconds <code></p>
+<p><code> Time per run </code> ~45 seconds <code></p>
+<p><code> Frequency </code> Daily <code></p>
+
+<p>## Why This Matters</p>
+<p>This entire system 鈥?AI summarization, curation, scheduling, email delivery 鈥?runs on infrastructure that costs less than a cup of coffee per month. And it runs <strong>autonomously forever</strong>.</p>
+
+<p>鈫?[Full source code + docker-compose](https://github.com/lu7897859-tech/auto-ai-cluster)</p>
+<p>鈫?[Read the architecture paper](/auto-ai-cluster/white-paper.html)</p>
+
+
+<hr>
+<footer>
+<p>Part of <a href="https://github.com/lu7897859-tech/auto-ai-cluster">Auto-AI-Cluster</a> 鈥?open source autonomous AI cluster framework.</p>
+<p><a href="https://github.com/lu7897859-tech/auto-ai-cluster/releases/download/v1.0.0/Form-B-Architecture-Paper.pdf">Download the White Paper (PDF)</a></p>
+</footer>
+</body>
+</html>
