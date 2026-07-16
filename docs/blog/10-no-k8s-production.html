@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>10 — Deploying Production-Grade AI Clusters Without Kubernetes | Auto-AI-Cluster Blog</title>
+<meta name="robots" content="index,follow">
+<meta property="og:image" content="https://lu7897859-tech.github.io/auto-ai-cluster/og-image.svg">
+<style>body{max-width:800px;margin:0 auto;padding:20px;font-family:-apple-system,sans-serif;line-height:1.6;color:#c9d1d9;background:#0d1117}h1{color:#58a6ff}h2{color:#3fb950}h3{color:#d2a8ff}a{color:#58a6ff}pre{background:#161b22;padding:16px;border-radius:8px;overflow-x:auto}code{background:#161b22;padding:2px 6px;border-radius:4px}p{margin:16px 0}</style>
+</head>
+<body>
+<nav><a href="https://lu7897859-tech.github.io/auto-ai-cluster/">Home</a> | <a href="https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/index.html">Blog</a></nav>
+<h1>10 — Deploying Production-Grade AI Clusters Without Kubernetes</h1>
+
+<p><strong>2026-07-16</strong></p>
+
+<p>The industry assumption is that production = Kubernetes. For autonomous AI clusters at the edge, this is wrong.</p>
+
+<h2>Kubernetes at 2C4G</h2>
+<p>| Component | Memory | CPU |</p>
+<p>|-----------|:------:|:---:|</p>
+<p>| kubelet | 200-500MB | 0.1 core |</p>
+<p>| kube-proxy | 50-100MB | 0.05 core |</p>
+<p>| etcd (if control plane) | 500MB-1GB | 0.2 core |</p>
+<p>| CoreDNS | 20-50MB | 0.01 core |</p>
+<p>| <strong>K8s overhead alone</strong> | <strong>~1-1.5GB</strong> | <strong>~0.4 core</strong> |</p>
+<p>| Remaining for AI workloads | <strong>~2.5GB</strong> | <strong>~1.6 core</strong> |</p>
+
+<h2>Docker Compose at 2C4G</h2>
+<p>| Component | Memory | CPU |</p>
+<p>|-----------|:------:|:---:|</p>
+<p>| docker engine | 50-100MB | 0.02 core |</p>
+<p>| compose (if running) | 20MB | negligible |</p>
+<p>| Nginx | 30-50MB | 0.01 core |</p>
+<p>| <strong>Overhead total</strong> | <strong>~150MB</strong> | <strong>~0.05 core</strong> |</p>
+<p>| Remaining for AI workloads | <strong>~3.8GB</strong> | <strong>~3.95 core</strong> |</p>
+
+<h2>The Argument</h2>
+<p>Docker Compose is not "less production" than Kubernetes — it's <strong>production for a different scale class</strong>. For single-node autonomous systems, Compose provides:</p>
+- Declarative infrastructure (YAML)
+- Health checks + auto-restart
+- Network isolation between containers
+- Volume persistence
+- <strong>95% more available resources</strong> for actual workloads
+
+<h2>When to Graduate to K8s</h2>
+<p>Only when you need multi-node orchestration. The Auto-AI-Cluster enterprise version includes K8s migration paths for this exact scenario.</p>
+
+<a href="https://github.com/lu7897859-tech/auto-ai-cluster">Community Edition (Docker Compose)</a>
+<a href="https://github.com/lu7897859-tech/auto-ai-cluster/blob/main/k8s-enterprise">Enterprise Edition (K8s)</a>
+<a href="/auto-ai-cluster/white-paper.html">Read the white paper</a>
+
+
+<hr>
+<footer><p>Part of <a href="https://github.com/lu7897859-tech/auto-ai-cluster">Auto-AI-Cluster</a> — <a href="https://github.com/lu7897859-tech/auto-ai-cluster/releases/download/v1.0.0/Form-B-Architecture-Paper.pdf">Download the White Paper (PDF)</a></p></footer>
+</body>
+</html>
