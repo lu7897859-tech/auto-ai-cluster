@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>07 — PostgreSQL Survival Tuning for 2C4G: A Practical Guide | Auto-AI-Cluster Blog</title>
+<meta name="robots" content="index,follow">
+<meta property="og:image" content="https://lu7897859-tech.github.io/auto-ai-cluster/og-image.svg">
+<style>body{max-width:800px;margin:0 auto;padding:20px;font-family:-apple-system,sans-serif;line-height:1.6;color:#c9d1d9;background:#0d1117}h1{color:#58a6ff}h2{color:#3fb950}h3{color:#d2a8ff}a{color:#58a6ff}pre{background:#161b22;padding:16px;border-radius:8px;overflow-x:auto}code{background:#161b22;padding:2px 6px;border-radius:4px}p{margin:16px 0}</style>
+</head>
+<body>
+<nav><a href="https://lu7897859-tech.github.io/auto-ai-cluster/">Home</a> | <a href="https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/index.html">Blog</a></nav>
+<h1>07 — PostgreSQL Survival Tuning for 2C4G: A Practical Guide</h1>
+
+<p><strong>2026-07-16</strong></p>
+
+<p>PostgreSQL at 2C4G is like tuning a race car for city streets. The default config assumes abundant resources. Here's what to change.</p>
+
+<h2>The Config</h2>
+<pre><code>shared_buffers = 512MB       # 25% of RAM
+effective_cache_size = 1536MB # 75% of RAM - OS will cache the rest
+work_mem = 16MB              # Keep low: 16MB × max_connections = total
+maintenance_work_mem = 128MB # For vacuum, index creation
+wal_buffers = 8MB            # Minimal for low-write workloads
+random_page_cost = 1.1       # SSD optimization (default 4.0)
+effective_io_concurrency = 200
+max_parallel_workers_per_gather = 1  # No parallelism on 2 cores
+max_worker_processes = 2
+<pre><code>
+<h2>The Query That Tells You If Your PG Is Healthy</h2>
+<pre><code>SELECT
+  sum(blks_read) as total_reads,
+  sum(blks_hit) as total_hits,
+  sum(blks_hit)::float / (sum(blks_hit) + sum(blks_read))::float * 100 as cache_hit_ratio,
+  numbackends
+FROM pg_stat_database;
+-- Cache hit ratio should be > 99%
+<pre><code>
+<h2>The Trap</h2>
+On 2C4G, the most common PostgreSQL failure is not a crash — it's <strong>silent swapping</strong>. When PG + n8n + OS exceed 4GB, the kernel swaps, and query latency spikes from 2ms to 5000ms. The survival-first health check catches this before users notice.
+
+<a href="https://github.com/lu7897859-tech/auto-ai-cluster">View the full docker-compose</a>
+<a href="/auto-ai-cluster/white-paper.html">Read the survival-first white paper</a>
+
+
+<hr>
+<footer><p>Part of <a href="https://github.com/lu7897859-tech/auto-ai-cluster">Auto-AI-Cluster</a> — <a href="https://github.com/lu7897859-tech/auto-ai-cluster/releases/download/v1.0.0/Form-B-Architecture-Paper.pdf">Download the White Paper (PDF)</a></p></footer>
+</body>
+</html>
