@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>09 — Edge AI vs Cloud AI: The Latency Tipping Point | Auto-AI-Cluster Blog</title>
+<meta name="robots" content="index,follow">
+<meta property="og:image" content="https://lu7897859-tech.github.io/auto-ai-cluster/og-image.svg">
+<style>body{max-width:800px;margin:0 auto;padding:20px;font-family:-apple-system,sans-serif;line-height:1.6;color:#c9d1d9;background:#0d1117}h1{color:#58a6ff}h2{color:#3fb950}h3{color:#d2a8ff}a{color:#58a6ff}pre{background:#161b22;padding:16px;border-radius:8px;overflow-x:auto}code{background:#161b22;padding:2px 6px;border-radius:4px}p{margin:16px 0}</style>
+</head>
+<body>
+<nav><a href="https://lu7897859-tech.github.io/auto-ai-cluster/">Home</a> | <a href="https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/index.html">Blog</a></nav>
+<h1>09 — Edge AI vs Cloud AI: The Latency Tipping Point</h1>
+
+<p><strong>2026-07-16</strong></p>
+
+<p>Cloud AI has a hidden cost that nobody talks about: <strong>decision latency</strong>. For autonomous systems, 500ms vs 50ms is the difference between responding to a market change and watching it pass.</p>
+
+<h2>The Latency Breakdown</h2>
+<p>| Operation | Cloud AI | Edge AI (2C4G) |</p>
+<p>|-----------|:--------:|:--------------:|</p>
+<p>| API call startup | 100-300ms | 0ms (local process) |</p>
+<p>| Network round trip | 20-100ms | 0ms |</p>
+<p>| Auth + rate limiting | 50-200ms | 0ms |</p>
+<p>| Model inference | 200-2000ms | 200-500ms (if local) |</p>
+<p>| Database query | 10-50ms (RDS) | 2-10ms (local) |</p>
+<p>| <strong>Total per action</strong> | <strong>380ms-2.6s</strong> | <strong>2-510ms</strong> |</p>
+
+<h2>The Threshold</h2>
+<p>The survival-first white paper identifies the <strong>150ms threshold</strong>: once you need to make decisions faster than human reaction time, edge AI is not just cheaper — it's _architecturally required_.</p>
+
+<h2>The Tradeoff</h2>
+<p>Edge AI trades raw compute power for <strong>deterministic latency</strong>. A 2C4G VPS running n8n + PostgreSQL can trigger 100+ autonomous workflows per minute with _guaranteed_ response times. The same workflows on cloud AI would cost $200+/month and have unpredictable cold starts.</p>
+
+<a href="/auto-ai-cluster/white-paper.html">Architecture paper</a>
+<a href="https://github.com/lu7897859-tech/auto-ai-cluster">GitHub repo</a>
+
+
+<hr>
+<footer><p>Part of <a href="https://github.com/lu7897859-tech/auto-ai-cluster">Auto-AI-Cluster</a> — <a href="https://github.com/lu7897859-tech/auto-ai-cluster/releases/download/v1.0.0/Form-B-Architecture-Paper.pdf">Download the White Paper (PDF)</a></p></footer>
+</body>
+</html>
