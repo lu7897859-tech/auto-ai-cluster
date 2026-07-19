@@ -1,46 +1,86 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 <title>Auto-AI-Cluster Blog</title>
 <subtitle>Self-hosted autonomous AI cluster frameworks and tutorials</subtitle>
 <link href="https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/index.html"/>
-<updated>2026-07-16T00:00:00Z</updated>
+<updated>2026-07-19T00:00:00Z</updated>
 <author><name>Auto-AI-Cluster Team</name></author>
 <id>https://lu7897859-tech.github.io/auto-ai-cluster/feed.xml</id>
 <entry>
-<title>04 鈥?Disaster Recovery for Edge AI Clusters: When the VPS Goes Down</title>
-<link href="https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/04-disaster-recovery-edge-ai.html"/>
-<id>https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/04-disaster-recovery-edge-ai.html</id>
+<title>12 — Building a Telegram AI Bot Agent with n8n on Your 2C4G VPS</title>
+<link href="https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/12-telegram-ai-bot-n8n-tutorial.html"/>
+<id>https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/12-telegram-ai-bot-n8n-tutorial.html</id>
 <updated>2026-07-16T00:00:00Z</updated>
-<summary>A 2C4G VPS is cheap and effective, but it's also a single point of failure. Here's how we handle disaster recovery at ze</summary>
-</entry><entry>
-<title>05 鈥?Zero-to-Hero: Building an AI Newsletter Curator on a $5 VPS</title>
+<summary>A Telegram bot is the cheapest, most practical interface for your AI cluster. No web UI to build. No mobile app to maint</summary>
+</entry>
+<entry>
+<title>10 — Deploying Production-Grade AI Clusters Without Kubernetes</title>
+<link href="https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/10-no-k8s-production.html"/>
+<id>https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/10-no-k8s-production.html</id>
+<updated>2026-07-16T00:00:00Z</updated>
+<summary>10 — Deploying Production-Grade AI Clusters Without Kubernetes</summary>
+</entry>
+<entry>
+<title>09 — Edge AI vs Cloud AI: The Latency Tipping Point</title>
+<link href="https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/09-edge-vs-cloud-latency.html"/>
+<id>https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/09-edge-vs-cloud-latency.html</id>
+<updated>2026-07-16T00:00:00Z</updated>
+<summary>09 — Edge AI vs Cloud AI: The Latency Tipping Point</summary>
+</entry>
+<entry>
+<title>08 — n8n Workflow Optimization for Low-Memory Environments</title>
+<link href="https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/08-n8n-low-memory-optimization.html"/>
+<id>https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/08-n8n-low-memory-optimization.html</id>
+<updated>2026-07-16T00:00:00Z</updated>
+<summary>08 — n8n Workflow Optimization for Low-Memory Environments</summary>
+</entry>
+<entry>
+<title>07 — PostgreSQL Survival Tuning for 2C4G: A Practical Guide</title>
+<link href="https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/07-postgres-survival-tuning.html"/>
+<id>https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/07-postgres-survival-tuning.html</id>
+<updated>2026-07-16T00:00:00Z</updated>
+<summary>07 — PostgreSQL Survival Tuning for 2C4G: A Practical Guide</summary>
+</entry>
+<entry>
+<title>06 — The Docker Compose Health Check Pattern for Autonomous Systems</title>
+<link href="https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/06-docker-compose-healthcheck-pattern.html"/>
+<id>https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/06-docker-compose-healthcheck-pattern.html</id>
+<updated>2026-07-16T00:00:00Z</updated>
+<summary>06 — The Docker Compose Health Check Pattern for Autonomous Systems</summary>
+</entry>
+<entry>
+<title>05 — Zero-to-Hero: Building an AI Newsletter Curator on a $5 VPS</title>
 <link href="https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/05-newsletter-curator-tutorial.html"/>
 <id>https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/05-newsletter-curator-tutorial.html</id>
 <updated>2026-07-16T00:00:00Z</updated>
-<summary>This is a complete tutorial showing how to build an AI-powered newsletter curator using n8n + DeepSeek API on a 2C4G VPS</summary>
-</entry><entry>
-<title>Auto-AI-Cluster Technical Blog</title>
-<link href="https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/survival-first-architecture.html"/>
-<id>https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/survival-first-architecture.html</id>
+<summary>05 — Zero-to-Hero: Building an AI Newsletter Curator on a $5 VPS</summary>
+</entry>
+<entry>
+<title>04 — Disaster Recovery for Edge AI Clusters: When the VPS Goes Down</title>
+<link href="https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/04-disaster-recovery-edge-ai.html"/>
+<id>https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/04-disaster-recovery-edge-ai.html</id>
 <updated>2026-07-16T00:00:00Z</updated>
-<summary>Most AI infrastructure today is designed backwards. Engineers start with the ideal architecture 鈥?Kubernetes, GPU cluste</summary>
-</entry><entry>
+<summary>04 — Disaster Recovery for Edge AI Clusters: When the VPS Goes Down</summary>
+</entry>
+<entry>
+<title>03 — Self-Hosted AI Agent Cluster vs Cloud AI: The Cost Analysis</title>
+<link href="https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/03-selfhosted-vs-cloud-cost.html"/>
+<id>https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/03-selfhosted-vs-cloud-cost.html</id>
+<updated>2026-07-16T00:00:00Z</updated>
+<summary>03 — Self-Hosted AI Agent Cluster vs Cloud AI: The Cost Analysis</summary>
+</entry>
+<entry>
+<title>Auto-AI-Cluster 技术文章</title>
+<link href="https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/02-n8n-postgres-2c4g.html"/>
+<id>https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/02-n8n-postgres-2c4g.html</id>
+<updated>2026-07-16T00:00:00Z</updated>
+<summary>Auto-AI-Cluster 技术文章</summary>
+</entry>
+<entry>
 <title>Auto-AI-Cluster Technical Blog</title>
 <link href="https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/01-survival-first-architecture.html"/>
 <id>https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/01-survival-first-architecture.html</id>
 <updated>2026-07-16T00:00:00Z</updated>
-<summary>Most AI infrastructure today is designed backwards. Engineers start with the ideal architecture 鈥?Kubernetes, GPU cluste</summary>
-</entry><entry>
-<title>Auto-AI-Cluster 鎶€鏈枃绔?</title>
-<link href="https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/02-n8n-postgres-2c4g.html"/>
-<id>https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/02-n8n-postgres-2c4g.html</id>
-<updated>2026-07-16T00:00:00Z</updated>
-<summary>Setting up n8n with PostgreSQL on a 2C4G VPS requires careful resource allocation. Here's the exact configuration we use</summary>
-</entry><entry>
-<title>03 鈥?Self-Hosted AI Agent Cluster vs Cloud AI: The Cost Analysis</title>
-<link href="https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/03-selfhosted-vs-cloud-cost.html"/>
-<id>https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/03-selfhosted-vs-cloud-cost.html</id>
-<updated>2026-07-16T00:00:00Z</updated>
-<summary>When comparing self-hosted AI agent clusters against cloud AI services, the numbers reveal a stark truth: at scale, self</summary>
+<summary>Auto-AI-Cluster Technical Blog</summary>
 </entry>
 </feed>

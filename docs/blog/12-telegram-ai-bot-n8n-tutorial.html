@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>12 — Building a Telegram AI Bot Agent with n8n on Your 2C4G VPS | Auto-AI-Cluster Blog</title>
+<meta name="description" content="Build a Telegram AI bot agent on your 2C4G VPS with n8n. Complete tutorial from BotFather setup to production deployment with AI gateway integration.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/">
+<meta property="og:image" content="https://lu7897859-tech.github.io/auto-ai-cluster/og-image.svg">
+<style>
+body{max-width:800px;margin:0 auto;padding:20px;font-family:-apple-system,sans-serif;line-height:1.8;color:#c9d1d9;background:#0d1117}
+h1{color:#58a6ff;border-bottom:1px solid #30363d;padding-bottom:8px}
+h2{color:#79c0ff;margin-top:32px}
+h3{color:#d2a8ff;margin-top:24px}
+a{color:#58a6ff}
+pre{background:#161b22;padding:14px;border-radius:6px;overflow-x:auto;font-size:14px;border:1px solid #30363d}
+code{background:#161b22;padding:2px 6px;border-radius:3px;font-size:14px}
+pre code{background:none;padding:0}
+table{border-collapse:collapse;width:100%;margin:16px 0}
+th,td{border:1px solid #30363d;padding:8px 12px;text-align:left}
+th{background:#161b22}
+small{color:#8b949e}
+.tag{display:inline-block;background:#1f2937;color:#58a6ff;padding:2px 10px;border-radius:12px;font-size:13px;margin-right:6px}
+nav{margin-bottom:20px;font-size:14px}
+nav a{color:#8b949e;text-decoration:none}
+nav a:hover{color:#58a6ff}
+hr{border:none;border-top:1px solid #30363d}
+ul,ol{padding-left:24px}
+li{margin:4px 0}
+p{margin:14px 0}
+</style>
+</head>
+<body>
+<nav><a href="https://lu7897859-tech.github.io/auto-ai-cluster/">Home</a> · <a href="https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/index.html">Blog</a></nav>
+
+<h1>12 — Building a Telegram AI Bot Agent with n8n on Your 2C4G VPS</h1>
+<p><small>Published 2026-07-19 · 12 min read</small></p>
+
+
+<h1>12 — Building a Telegram AI Bot Agent with n8n on Your 2C4G VPS</h1>
+
+<p>> <strong>Published:</strong> 2026-07-19</p>
+<p>> <strong>Tags:</strong> n8n, Telegram, Bot, 2C4G, Tutorial, AI Agent</p>
+<p>> <strong>Read time:</strong> 12 min</p>
+
+<h2>Why a Telegram Bot?</h2>
+
+<p>A Telegram bot is the cheapest, most practical interface for your AI cluster. No web UI to build. No mobile app to maintain. Your users type a message → your n8n workflow calls DeepSeek/OpenAI → the bot replies with AI-generated content.</p>
+
+<p>On a 2C4G VPS, this whole stack runs at <strong>~33 MB RAM overhead</strong> beyond the base cluster. This tutorial walks through every step.</p>
+
+<h2>Architecture</h2>
+
+<pre><code>Telegram User ──message──▶ Bot API ──webhook──▶ n8n Webhook Node
+                                                    │
+                                          ┌─────────▼─────────┐
+                                          │  AI Gateway (port  │
+                                          │  3456)             │
+                                          └─────────┬─────────┘
+                                                    │
+                                          ┌─────────▼─────────┐
+                                          │  DeepSeek / OpenAI │
+                                          └───────────────────┘
+                                                    │
+                                          ┌─────────▼─────────┐
+                                          │  n8n Respond Node  │
+                                          └───────────────────┘
+                                                    │
+Telegram User ◀──reply── Bot API ◀──webhook response──┘
+<pre><code>
+<h2>Step 1: Create the Telegram Bot</h2>
+
+Talk to <a href="https://t.me/BotFather">@BotFather</a> on Telegram:
+
+<pre><code>/newbot
+Name: My AI Assistant
+Username: my_ai_assistant_bot
+<pre><code>
+Save the token: <code>7654321:AAHdqTcvCH1vGWJxfSeofSAs0K5PALDsaw</code>
+
+Then disable privacy mode:
+
+<pre><code>/setprivacy → Disable
+<pre><code>
+<h2>Step 2: Configure the Webhook</h2>
+
+You need a public HTTPS endpoint. Use Cloudflare Tunnel (free) or ngrok.
+
+<strong>Cloudflare Tunnel:</strong>
+
+<pre><code>cloudflared tunnel create my-ai-bot
+cloudflared tunnel route dns my-ai-bot bot.yourdomain.com
+<pre><code>
+<strong>ngrok (testing only):</strong>
+
+<pre><code>ngrok http 5678  # n8n default port
+<pre><code>
+Set the webhook URL:
+
+<pre><code>curl -X POST "https://api.telegram.org/bot<YOUR_TOKEN>/setWebhook" \
+  -H "Content-Type: application/json" \
+  -d '{"url": "https://your-tunnel.ngrok.io/webhook/telegram"}'
+<pre><code>
+Verify:
+
+<pre><code>curl "https://api.telegram.org/bot<YOUR_TOKEN>/getWebhookInfo"
+<pre><code>
+<h2>Step 3: Build the n8n Workflow</h2>
+
+<h3>3a. Webhook Node (Trigger)</h3>
+
+<tr><td>Setting</td><td>Value</td></tr>
+
+<tr><td>HTTP Method</td><td>POST</td></tr>
+<tr><td>Path</td><td><code>telegram</code></td></tr>
+<tr><td>Response Mode</td><td>Last Node</td></tr>
+<tr><td>Options: Raw Body</td><td>true</td></tr>
+
+<h3>3b. Code Node — Extract Message</h3>
+
+<pre><code>const body = $input.first().json;
+const chatId = body.message?.chat?.id;
+const text = body.message?.text || '';
+const userId = body.message?.from?.id;
+const username = body.message?.from?.username || 'unknown';
+
+return [{ json: { chatId, text, userId, username } }];
+<pre><code>
+<h3>3c. HTTP Request Node — Call AI</h3>
+
+Call your AI gateway or DeepSeek directly:
+
+<tr><td>Setting</td><td>Value</td></tr>
+
+<tr><td>Method</td><td>POST</td></tr>
+<tr><td>URL</td><td><code>http://ai-gateway:3456/v1/chat</code></td></tr>
+<tr><td>Body</td><td><code>{"messages": [{"role": "user", "content": "{{ $json.text }}"}]}</code></td></tr>
+
+<h3>3d. Code Node — Format Reply</h3>
+
+<pre><code>const response = $input.first().json;
+let replyText = response.choices?.[0]?.message?.content
+  || response.content
+  || JSON.stringify(response).substring(0, 4000);
+if (replyText.length > 4000) replyText = replyText.substring(0, 3997) + '...';
+
+return [{ json: { chatId: $json.chatId, text: replyText } }];
+<pre><code>
+<h3>3e. Respond to Webhook Node</h3>
+
+<pre><code>method: sendMessage
+chat_id: {{ $json.chatId }}
+text: {{ $json.text }}
+<pre><code>
+<h2>Step 4: Add Conversation Memory</h2>
+
+Add a Code Node before the AI call:
+
+<pre><code>const memory = {};
+const userId = $json.userId;
+const text = $json.text;
+
+if (!memory[userId]) memory[userId] = [];
+memory[userId].push({ role: 'user', content: text });
+if (memory[userId].length > 10) memory[userId] = memory[userId].slice(-10);
+
+const messages = [
+  { role: 'system', content: 'You are a helpful AI assistant on a 2C4G VPS.' }
+].concat(memory[userId]);
+
+return [{ json: { messages } }];
+<pre><code>
+> <strong>Note:</strong> This resets on n8n restart. For production, store in PostgreSQL.
+
+<h2>Resource Usage on 2C4G</h2>
+
+<tr><td>Component</td><td>RAM</td><td>Notes</td></tr>
+
+<tr><td>Cloudflare Tunnel</td><td>~25 MB</td><td>Only needed without public IP</td></tr>
+<tr><td>Workflow overhead</td><td>~8 MB</td><td>Per-call allocation</td></tr>
+<tr><td><strong>Total additional</strong></td><td><strong>~33 MB</strong></td><td>Negligible</td></tr>
+
+<h2>Production Checklist</h2>
+
+<li><input type="checkbox" disabled  ="checked"> <strong>Rate limiting</strong> – max 10 messages/user/minute via n8n throttle</li>
+<li><input type="checkbox" disabled  ="checked"> <strong>User allowlist</strong> – check userId in a Code Node</li>
+<li><input type="checkbox" disabled  ="checked"> <strong>Command routing</strong> – <code>/help</code>, <code>/status</code>, <code>/clear</code> with a Switch Node</li>
+<li><input type="checkbox" disabled  ="checked"> <strong>Error messages</strong> – catch API failures, reply "Busy, try again"</li>
+<li><input type="checkbox" disabled  ="checked"> <strong>Group chat</strong> – check <code>body.message.chat.type</code></li>
+<li><input type="checkbox" disabled  ="checked"> <strong>Markdown sanitization</strong> – wrap in try-catch, fall back to plain text</li>
+
+<h2>Commands to Implement</h2>
+
+<pre><code>/help    → "I'm your AI assistant. Send any message and I'll reply."
+/status  → "Cluster healthy. Uptime: 12d. API: DeepSeek (OK)"
+/clear   → "Memory cleared."
+/price   → "Current cost: ~$0.0005 per query via DeepSeek"
+<pre><code>
+<h2>Why This Works on 2C4G</h2>
+
+Telegram bots are <strong>webhook-driven, not polling</strong>. n8n only allocates memory when a message arrives. Between messages, the workflow sits idle at zero cost. The same $5/month VPS that runs n8n, PostgreSQL, and your AI gateway now runs a full-featured Telegram AI bot.
+
+<h2>Next Steps</h2>
+
+1. Add <strong>image generation</strong> – route prompts to Stable Diffusion or DALL-E
+2. Add <strong>voice messages</strong> – Whisper speech-to-text
+3. Add <strong>scheduled broadcasts</strong> – n8n cron node for daily summaries
+4. Turn it into a <strong>multi-agent system</strong> – separate bots for research, coding, writing
+
+<hr>
+
+*Part of the Auto-AI-Cluster series. Published 2026-07-19. <a href="https://github.com/lu7897859-tech/auto-ai-cluster">Source on GitHub.</a>*
+
+
+
+<hr>
+<footer><p><small>Part of <a href="https://github.com/lu7897859-tech/auto-ai-cluster">Auto-AI-Cluster</a>. Published 2026-07-19.</small></p></footer>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"12 — Building a Telegram AI Bot Agent with n8n on Your 2C4G VPS","datePublished":"2026-07-19","author":{"@type":"Person","name":"Auto-AI-Cluster"},"description":"Build a Telegram AI bot agent on your 2C4G VPS with n8n. Complete tutorial from BotFather setup to production deployment with AI gateway integration."}</script>
+</body>
+</html>
