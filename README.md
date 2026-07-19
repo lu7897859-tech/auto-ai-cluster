@@ -108,3 +108,12 @@ This project offers **two product forms**:
 
 ---
 *This project was launched using [Launch Torch](https://github.com/lu7897859-tech/launch-torch) — the seven-layer platform bypass engine.*
+---
+
+## 📡 Distribution
+
+This project was launched using the **Launch Torch** platform bypass engine — seven independent signal layers that achieve product discovery without platform dependency.
+
+- [📖 Case Study: How Auto-AI-Cluster passed the Great Filter](https://github.com/lu7897859-tech/launch-torch/docs/CASE-STUDY-auto-ai-cluster.md)
+- [🔥 Launch Torch engine](https://github.com/lu7897859-tech/launch-torch)
+- [📦 Product page](https://lu7897859-tech.github.io/launch-torch/product.html)
