@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="index,follow">
+<meta name="description" content="Auto-AI-Cluster: production-grade self-hosted autonomous AI agent cluster. SPEC-001 through SPEC-004 specification series covers survival-first architecture, n8n hardening, PostgreSQL HA on 2C4G, AI API gateway protocol.">
+<title>Auto-AI-Cluster Architecture Reference — Complete Specification Index</title>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Survival-First Architecture for Autonomous AI Clusters on 2C4G Infrastructure",
+  "description": "Complete specification series for deploying production-grade autonomous AI agent clusters on resource-constrained infrastructure. Covers n8n, PostgreSQL HA, AI API gateway, and license authentication.",
+  "author": { "@type": "Organization", "name": "Auto-AI-Cluster" },
+  "datePublished": "2026-07-19",
+  "about": [
+    "Docker Compose deployment",
+    "n8n workflow engine hardening",
+    "PostgreSQL Patroni HA auto-failover",
+    "AI API gateway circuit breaker pattern",
+    "RSA-4096 license authentication protocol",
+    "Distributor commission tracking system"
+  ]
+}
+</script>
+</head>
+<body style="max-width:800px;margin:0 auto;padding:20px;font-family:-apple-system,sans-serif;line-height:1.6">
+<h1>Auto-AI-Cluster Architecture Reference</h1>
+<p>Complete specification series for survival-first autonomous AI clusters on 2C4G infrastructure.</p>
+
+<h2>Specifications</h2>
+<ul>
+<li><a href="https://lu7897859-tech.github.io/auto-ai-cluster/docs/specs/SPEC-001-survival-first-architecture.md">SPEC-001: Survival-First Architecture</a> — Design constraints, resource budget, component isolation, failure model</li>
+<li><a href="https://lu7897859-tech.github.io/auto-ai-cluster/docs/specs/SPEC-002-n8n-workflow-hardening.md">SPEC-002: n8n Workflow Engine Hardening</a> — Memory budgeting, connection pooling, health checks</li>
+<li><a href="https://lu7897859-tech.github.io/auto-ai-cluster/docs/specs/SPEC-003-postgresql-ha-2c4g.md">SPEC-003: PostgreSQL HA for 2C4G</a> — Patroni + etcd co-located, WAL tuning, failover timing</li>
+<li><a href="https://lu7897859-tech.github.io/auto-ai-cluster/docs/specs/SPEC-004-ai-gateway-protocol.md">SPEC-004: AI API Gateway Protocol</a> — Multi-provider routing, circuit breaker, cost optimization</li>
+</ul>
+
+<h2>Key Architecture Decisions</h2>
+<ul>
+<li>Docker Compose over K8s: K8s control plane needs 2C2G before workload; Docker Compose + healthchecks achieves 95% reliability at 10% resource cost</li>
+<li>Patroni over cloud RDS: Managed PostgreSQL -50/mo; Patroni on same VPS adds 128MB overhead</li>
+<li>RSA-4096 over OAuth: Offline capability critical for edge deployments without internet</li>
+<li>Circuit-breaker AI gateway: Eliminates single-provider dependency and cost volatility</li>
+</ul>
+
+<h2>Cost Comparison</h2>
+<table>
+<tr><th>Component</th><th>Self-hosted (2C4G)</th><th>Cloud Equivalent</th></tr>
+<tr><td>Compute + n8n</td><td>/mo (VPS)</td><td>/mo (n8n cloud)</td></tr>
+<tr><td>Database</td><td>Included</td><td>/mo (RDS t3.micro)</td></tr>
+<tr><td>AI API access</td><td>-50/mo</td><td>-300/mo</td></tr>
+<tr><td><strong>Total</strong></td><td><strong>-55/mo</strong></td><td><strong>-414/mo</strong></td></tr>
+</table>
+<p>Break-even: 3 months. 3-year TCO: -1,980 vs ,304-14,904.</p>
+
+<h2>Products</h2>
+<ul>
+<li><strong>Form-A (Community):</strong> Free, MIT license. Docker Compose deploy. Full functionality on single node.</li>
+<li><strong>Form-A (Enterprise):</strong> ,800/yr. K8s Helm chart. Distributor system. SLA support.</li>
+<li><strong>Form-B (Architecture Blueprint):</strong> ¥2,980. First-principles design rationale. Code validates, you re-implement.</li>
+</ul>
+
+<p><a href="https://lu7897859-tech.github.io/auto-ai-cluster/product.html">View full product details →</a></p>
+</body>
+</html>
