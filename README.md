@@ -105,3 +105,6 @@ This project offers **two product forms**:
 | **Form-B**: Architecture Blueprint | First-principles design thinking — code validates the concept, you re-implement with o1-preview/Claude Opus | ¥2,980 |
 
 → [**View full product details & register interest**](https://lu7897859-tech.github.io/auto-ai-cluster/product.html)
+
+---
+*This project was launched using [Launch Torch](https://github.com/lu7897859-tech/launch-torch) — the seven-layer platform bypass engine.*
