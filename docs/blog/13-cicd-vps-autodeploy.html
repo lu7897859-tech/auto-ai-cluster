@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>13 — Zero-Downtime CI/CD for Self-Hosted AI Clusters: GitHub Actions → 2C4G VPS | Auto-AI-Cluster Blog</title>
+<meta name="description" content="Zero-downtime CI/CD pipeline for self-hosted AI clusters on a 2C4G VPS. GitHub Actions → SSH → Docker Compose. Complete tutorial with rollback, health checks & production checklist.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/">
+<meta property="og:image" content="https://lu7897859-tech.github.io/auto-ai-cluster/og-image.svg">
+<style>
+body{max-width:800px;margin:0 auto;padding:20px;font-family:-apple-system,sans-serif;line-height:1.8;color:#c9d1d9;background:#0d1117}
+h1{color:#58a6ff;border-bottom:1px solid #30363d;padding-bottom:8px}
+h2{color:#79c0ff;margin-top:32px}
+h3{color:#d2a8ff;margin-top:24px}
+a{color:#58a6ff}
+pre{background:#161b22;padding:14px;border-radius:6px;overflow-x:auto;font-size:14px;border:1px solid #30363d}
+code{background:#161b22;padding:2px 6px;border-radius:3px;font-size:14px}
+pre code{background:none;padding:0}
+table{border-collapse:collapse;width:100%;margin:16px 0}
+th,td{border:1px solid #30363d;padding:8px 12px;text-align:left}
+th{background:#161b22}
+small{color:#8b949e}
+.tag{display:inline-block;background:#1f2937;color:#58a6ff;padding:2px 10px;border-radius:12px;font-size:13px;margin-right:6px}
+nav{margin-bottom:20px;font-size:14px}
+nav a{color:#8b949e;text-decoration:none}
+nav a:hover{color:#58a6ff}
+hr{border:none;border-top:1px solid #30363d}
+ul,ol{padding-left:24px}
+li{margin:4px 0}
+p{margin:14px 0}
+</style>
+</head>
+<body>
+<nav><a href="https://lu7897859-tech.github.io/auto-ai-cluster/">Home</a> · <a href="https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/index.html">Blog</a></nav>
+
+<h1>13 — Zero-Downtime CI/CD for Self-Hosted AI Clusters: GitHub Actions → 2C4G VPS</h1>
+<p><small>Published 2026-07-19 · 14 min read</small></p>
+
+
+<h1>13 — Zero-Downtime CI/CD for Self-Hosted AI Clusters: GitHub Actions → 2C4G VPS</h1>
+
+<p>> <strong>Published:</strong> 2026-07-19</p>
+<p>> <strong>Tags:</strong> CI/CD, GitHub Actions, Docker, 2C4G, DevOps, Deployment</p>
+<p>> <strong>Read time:</strong> 14 min</p>
+
+<h2>The Problem</h2>
+
+<p>You've built the perfect AI cluster on your 2C4G VPS. n8n workflows are running. Telegram bot is responding. Postgres is tuned. Now how do you update it without downtime?</p>
+
+<p>On a Kubernetes cluster, you'd <code>kubectl rollout</code>. On a 2C4G VPS with Docker Compose, you need something leaner. This tutorial shows you exactly that — a <strong>zero-downtime CI/CD pipeline</strong> using GitHub Actions that fits in 512 MB of overhead.</p>
+
+<h2>Architecture</h2>
+
+<pre><code>
+Git Push (main branch)
+      │
+      ▼
+GitHub Actions Runner
+      │
+      ├── 1. Build (nothing to build — Docker images pulled)
+      ├── 2. Test (validate docker-compose, config files)
+      ├── 3. Deploy (SSH → VPS → docker compose up -d)
+      └── 4. Health Check (curl endpoints, verify services)
+              │
+              ▼
+        Your 2C4G VPS
+        (zero-downtime via rolling
+         container replacement)
+<pre><code>
+
+<h2>Prerequisites</h2>
+
+Before starting, make sure you have:
+
+<tr><td>Item</td><td>Check</td></tr>
+
+<tr><td>Docker Compose v2.24+ on VPS</td><td>✅</td></tr>
+<tr><td>SSH key pair (no passphrase)</td><td>✅</td></tr>
+<tr><td>GitHub repository with <code>main</code> branch</td><td>✅</td></tr>
+<tr><td>Existing docker-compose.yml in repo root</td><td>✅</td></tr>
+<tr><td>CI/CD-friendly Docker images (no build step on VPS)</td><td>✅</td></tr>
+
+<h2>Step 1: Structure Your Repository</h2>
+
+<pre><code>
+auto-ai-cluster/
+├── docker-compose.yml          # Main compose file
+├── .github/
+│   └── workflows/
+│       └── deploy.yml          # CI/CD pipeline
+├── scripts/
+│   ├── health-check.sh         # Post-deploy verification
+│   └── rollback.sh             # Emergency rollback
+├── config/
+│   ├── .env.prod               # Prod env vars (gitignored)
+│   └── .env.example            # Template
+└── docs/
+    └── blog/
+        └── 13-cicd-vps-autodeploy.md
+<pre><code>
+
+<h2>Step 2: Add SSH Deploy Key to GitHub</h2>
+
+Generate a dedicated deploy key:
+
+<pre><code>
+ssh-keygen -t ed25519 -C "cicd@auto-ai-cluster" -f ~/.ssh/cicd_deploy_key -N ""
+<pre><code>
+
+Add the <strong>public key</strong> to VPS <code>~/.ssh/authorized_keys</code>:
+
+<pre><code>
+cat ~/.ssh/cicd_deploy_key.pub >> ~/.ssh/authorized_keys
+<pre><code>
+
+Add the <strong>private key</strong> to GitHub Secrets:
+
+<tr><td>Secret Name</td><td>Value</td></tr>
+
+<tr><td><code>VPS_SSH_KEY</code></td><td>Full private key content</td></tr>
+<tr><td><code>VPS_HOST</code></td><td>Your VPS IP or domain</td></tr>
+<tr><td><code>VPS_USER</code></td><td><code>root</code> or your sudo user</td></tr>
+<tr><td><code>VPS_PORT</code></td><td><code>22</code> (or custom SSH port)</td></tr>
+
+Clean up your local copy:
+
+<pre><code>
+rm ~/.ssh/cicd_deploy_key*
+<pre><code>
+
+<h2>Step 3: The CI/CD Workflow</h2>
+
+Create <code>.github/workflows/deploy.yml</code>:
+
+<pre><code>
+name: Deploy AI Cluster
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'docs/<strong>'
+      - 'README.md'
+      - '</strong>.md'
+  workflow_dispatch:  # Manual trigger
+
+env:
+  COMPOSE_FILE: docker-compose.yml
+  DEPLOY_DIR: /opt/auto-ai-cluster
+  HEALTH_RETRIES: 30
+  HEALTH_INTERVAL: 5  # seconds
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Validate docker-compose.yml
+        run: |
+          docker compose config > /dev/null
+          echo "✅ docker-compose.yml is valid"
+
+      - name: Setup SSH Connection
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.VPS_SSH_KEY }}
+
+      - name: Add VPS to known_hosts
+        run: |
+          ssh-keyscan -p ${{ secrets.VPS_PORT || 22 }} \
+            ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Sync Files to VPS
+        run: |
+          rsync -avz --delete \
+            -e "ssh -p ${{ secrets.VPS_PORT || 22 }}" \
+            --exclude '.git' \
+            --exclude '.github' \
+            --exclude 'docs' \
+            --exclude 'node_modules' \
+            --exclude '.env' \
+            ./ \
+            ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:${{ env.DEPLOY_DIR }}/
+
+      - name: Deploy with Zero Downtime
+        run: |
+          ssh -p ${{ secrets.VPS_PORT || 22 }} \
+            ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} \
+            "cd ${{ env.DEPLOY_DIR }} && \
+             docker compose pull && \
+             docker compose up -d --remove-orphans && \
+             docker image prune -f"
+
+      - name: Health Check
+        run: |
+          ssh -p ${{ secrets.VPS_PORT || 22 }} \
+            ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} \
+            "cd ${{ env.DEPLOY_DIR }} && \
+             chmod +x scripts/health-check.sh && \
+             ./scripts/health-check.sh"
+<pre><code>
+
+<h2>Step 4: Health Check Script</h2>
+
+Create <code>scripts/health-check.sh</code>:
+
+<pre><code>
+#!/bin/bash
+<h1>health-check.sh — Verify all services are running after deploy</h1>
+
+set -euo pipefail
+
+DEPLOY_DIR="${DEPLOY_DIR:-/opt/auto-ai-cluster}"
+MAX_RETRIES="${HEALTH_RETRIES:-30}"
+SLEEP_SEC="${HEALTH_INTERVAL:-5}"
+
+declare -A SERVICES=(
+  ["n8n"]     "http://localhost:5678/healthz"
+  ["postgres"] "pg_isready -U n8n -d n8n"
+  ["ai-gateway"] "http://localhost:3456/health"
+)
+
+echo "=== Post-Deploy Health Check ==="
+echo "Started at: $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+
+cd "$DEPLOY_DIR"
+
+for SERVICE in "${!SERVICES[@]}"; do
+  CHECK="${SERVICES[$SERVICE]}"
+  echo -n "Checking $SERVICE ... "
+  RETRIES=0
+  OK=false
+
+  while [ $RETRIES -lt $MAX_RETRIES ]; do
+    if eval "$CHECK" > /dev/null 2>&1; then
+      OK=true
+      break
+    fi
+    RETRIES=$((RETRIES + 1))
+    sleep "$SLEEP_SEC"
+  done
+
+  if [ "$OK" = true ]; then
+    echo "✅ (alive after ${RETRIES}s)"
+  else
+    echo "❌ FAILED after ${MAX_RETRIES} retries"
+    docker compose logs --tail=20 "$SERVICE"
+    exit 1
+  fi
+done
+
+echo "=== All services healthy ==="
+docker compose ps
+<pre><code>
+
+Make it executable:
+
+<pre><code>
+chmod +x scripts/health-check.sh
+<pre><code>
+
+<h2>Step 5: Rollback Script</h2>
+
+Create <code>scripts/rollback.sh</code>:
+
+<pre><code>
+#!/bin/bash
+<h1>rollback.sh — Revert to previous Docker Compose state</h1>
+
+set -euo pipefail
+
+DEPLOY_DIR="${DEPLOY_DIR:-/opt/auto-ai-cluster}"
+ROLLBACK_BRANCH="${1:-HEAD~1}"
+
+cd "$DEPLOY_DIR"
+
+echo "=== Emergency Rollback ==="
+echo "Rolling back to: $ROLLBACK_BRANCH"
+echo "Current state:"
+git log --oneline -3
+
+git stash
+git checkout "$ROLLBACK_BRANCH"
+
+docker compose pull
+docker compose up -d --remove-orphans
+
+echo "Rollback complete. Running health check..."
+bash scripts/health-check.sh
+<pre><code>
+
+<h2>Step 6: Zero-Downtime Trick — Graceful Container Swap</h2>
+
+The key insight: Docker Compose's <code>up -d</code> replaces containers one at a time when <code>docker-compose.yml</code> uses explicit container names and <code>depends_on</code>. But for <strong>true zero-downtime</strong>, add this to your n8n service:
+
+<pre><code>
+services:
+  n8n:
+    image: n8nio/n8n:latest
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:5678:5678"
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:5678/healthz',r=>process.exit(r.statusCode===200?0:1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    stop_grace_period: 30s
+    stop_signal: SIGTERM
+<pre><code>
+
+The critical setting is <strong><code>stop_grace_period: 30s</code></strong>. This gives n8n 30 seconds to finish in-flight requests before being killed. Combined with <code>restart: unless-stopped</code> and healthchecks, new n8n containers become healthy before the old ones are fully removed.
+
+<h2>Step 7: Test It</h2>
+
+Test locally first:
+
+<pre><code>
+<h1>Dry-run the workflow locally</h1>
+docker compose config > /dev/null && echo "✅ Config valid"
+bash scripts/health-check.sh
+<pre><code>
+
+Then trigger a real deploy:
+
+<pre><code>
+git add .
+git commit -m "feat: add CI/CD pipeline for zero-downtime deployment"
+git push origin main
+<pre><code>
+
+Watch it in real-time:
+
+<pre><code>
+<h1>On the VPS, tail the deploy log</h1>
+journalctl -u docker -f
+<pre><code>
+
+<h2>Resource Cost on 2C4G</h2>
+
+<tr><td>Component</td><td>RAM</td><td>CPU</td><td>Notes</td></tr>
+
+<tr><td>GitHub Actions runner</td><td>0 MB</td><td>0%</td><td>Runs on GitHub, not your VPS</td></tr>
+<tr><td>SSH session (active)</td><td>~2 MB</td><td><1%</td><td>Only during deploy</td></tr>
+<tr><td>Docker image prune</td><td>~50 MB temp</td><td>5-10%</td><td>Runs once, cleans old images</td></tr>
+<tr><td><strong>Total during deploy</strong></td><td><strong>~52 MB</strong></td><td><strong>5-10%</strong></td><td>Temporary spike, then drops</td></tr>
+<tr><td><strong>Normal operation</strong></td><td><strong>0 MB</strong></td><td><strong>0%</strong></td><td>Zero ongoing overhead</td></tr>
+
+<strong>The CI/CD pipeline costs you nothing on the VPS when it's not actively deploying.</strong> No monitoring agent, no runner daemon, no Kubernetes control plane — just SSH when you push.
+
+<h2>Production Checklist</h2>
+
+<li><input type="checkbox" disabled  ="checked"> <strong>Branch protection</strong> on <code>main</code> — require PR reviews before merge</li>
+<li><input type="checkbox" disabled  ="checked"> <strong>Staging environment</strong> — deploy to a staging VPS first, then production</li>
+<li><input type="checkbox" disabled  ="checked"> <strong>Database backups</strong> — <code>pg_dump</code> before each deploy, keep last 7 days</li>
+<li><input type="checkbox" disabled  ="checked"> <strong>Slack/Telegram notifications</strong> — add a webhook step after health check</li>
+<li><input type="checkbox" disabled  ="checked"> <strong>.env secrets</strong> — never commit to repo; use GitHub Secrets + scp</li>
+<li><input type="checkbox" disabled  ="checked"> <strong>Lock Docker tags</strong> — use <code>n8nio/n8n:1.70.0</code> not <code>:latest</code></li>
+<li><input type="checkbox" disabled  ="checked"> <strong>Failed deploy detection</strong> — add a cron on VPS that reverts if health check fails</li>
+
+<h2>Why This Beats K8s on 2C4G</h2>
+
+Kubernetes on a 2C4G VPS consumes ~1 GB just for the control plane. The GitHub Actions approach uses zero persistent resources. You get:
+
+- <strong>Same GitOps workflow</strong> as K8s
+- <strong>Same zero-downtime deploy</strong> pattern
+- <strong>Better rollback</strong> (git revert + push)
+- <strong>Zero cluster management overhead</strong>
+- <strong>Real-time logs</strong> from <code>docker compose logs -f</code>
+
+<h2>Integration with Existing Auto-AI-Cluster</h2>
+
+This pipeline integrates with everything built in earlier blogs:
+
+<tr><td>Blog</td><td>Integration</td></tr>
+
+<tr><td>#10 (No K8s)</td><td>This is the deployment strategy for that architecture</td></tr>
+<tr><td>#6 (Healthchecks)</td><td>The <code>healthcheck</code> in docker-compose powers the CI/CD health check</td></tr>
+<tr><td>#12 (Telegram Bot)</td><td>Add notification hook: deploy success/failure → Telegram</td></tr>
+<tr><td>#11 (AI Gateway)</td><td>Deploy new gateway configs with the pipeline</td></tr>
+
+<h2>Next Steps</h2>
+
+1. Add <strong>automated DB migrations</strong> — backup, migrate, verify, revert on failure
+2. Add <strong>canary deployments</strong> — route 10% traffic to a new version first
+3. Add <strong>auto-scaling</strong> — trigger GitHub Actions via webhook from a load monitor
+4. Set up <strong>scheduled deploys</strong> — weekly <code>cron</code> in GitHub Actions to pull latest images
+
+<hr>
+
+*Part of the Auto-AI-Cluster series. Published 2026-07-19. <a href="https://github.com/lu7897859-tech/auto-ai-cluster">Source on GitHub.</a>*
+
+
+
+<hr>
+<footer><p><small>Part of <a href="https://github.com/lu7897859-tech/auto-ai-cluster">Auto-AI-Cluster</a>. Published 2026-07-19.</small></p></footer>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"13 — Zero-Downtime CI/CD for Self-Hosted AI Clusters: GitHub Actions → 2C4G VPS","datePublished":"2026-07-19","author":{"@type":"Person","name":"Auto-AI-Cluster"},"description":"Zero-downtime CI/CD pipeline for self-hosted AI clusters on a 2C4G VPS. GitHub Actions → SSH → Docker Compose. Complete tutorial with rollback, health checks & production checklist."}</script>
+</body>
+</html>
