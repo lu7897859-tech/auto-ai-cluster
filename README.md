@@ -94,3 +94,14 @@ Sales-Operations/
 ---
 
 *用工程思维解决AI基础设施问题。*
+
+## 📊 Product & Demand Validation
+
+This project offers **two product forms**:
+
+| Form | What | Price |
+|------|------|-------|
+| **Form-A**: Code Product | Docker Compose/K8s deployable AI cluster engine — one-click deploy, auth agent, HA PostgreSQL, AI security audit | Free (Community) / \,800/yr (Enterprise) |
+| **Form-B**: Architecture Blueprint | First-principles design thinking — code validates the concept, you re-implement with o1-preview/Claude Opus | ¥2,980 |
+
+→ [**View full product details & register interest**](https://lu7897859-tech.github.io/auto-ai-cluster/product.html)
