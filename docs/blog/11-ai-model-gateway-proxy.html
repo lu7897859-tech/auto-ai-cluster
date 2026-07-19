@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Multi-Model AI Gateway on 2C4G | Auto-AI-Cluster Blog</title>
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/11-ai-model-gateway-proxy.html">
+<style>body{max-width:800px;margin:0 auto;padding:20px;font-family:-apple-system,sans-serif;line-height:1.6;color:#c9d1d9;background:#0d1117}h1{color:#58a6ff}h2{color:#3fb950}h3{color:#d2a8ff}a{color:#58a6ff}pre{background:#161b22;padding:16px;border-radius:8px;overflow-x:auto}code{background:#161b22;padding:2px 6px;border-radius:4px}p{margin:16px 0}</style>
+</head>
+<body>
+<nav><a href="https://lu7897859-tech.github.io/auto-ai-cluster/">Home</a> | <a href="https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/index.html">Blog</a></nav>
+<h1>Multi-Model AI Gateway: Route Between OpenAI, DeepSeek, and Local LLMs on a 2C4G VPS</h1>
+
+<p><strong>2026-07-17</strong></p>
+
+<p>Running a single AI model provider is a single point of failure. This guide shows how to build a lightweight AI gateway that routes requests across OpenAI, DeepSeek, and local models based on cost, latency, and availability — all on a 2C4G VPS.</p>
+
+<h2>Why You Need an AI Gateway</h2>
+
+<p>If your n8n workflows depend on a single AI provider, you are vulnerable to:</p>
+
+<p>- <strong>API outages</strong>: Provider goes down → your agent stops working</p>
+<p>- <strong>Cost spikes</strong>: No fallback to cheaper models when your primary API raises prices</p>
+<p>- <strong>Rate limits</strong>: Hitting token caps on popular models mid-workflow</p>
+<p>- <strong>Lock-in</strong>: Hard to migrate when a better/cheaper provider emerges</p>
+
+<p>A gateway solves all four with minimal overhead.</p>
+
+<h2>Architecture Overview</h2>
+
+<p>The gateway runs as a single Docker container (~25 MB RAM) and exposes a unified API endpoint:</p>
+
+<pre><code>Client (n8n) → Gateway (Node.js + express) → Provider 1 (DeepSeek, cheapest, tried first)
+                                            → Provider 2 (OpenAI, fallback)
+                                            → Provider 3 (Local OLLAMA, last resort)
+<pre><code>
+<h2>Implementation</h2>
+
+<h3>Docker Compose</h3>
+
+<pre><code>version: "3.8"
+services:
+  ai-gateway:
+    image: node:20-alpine
+    ports:
+      - "3002:3002"
+    volumes:
+      - ./gateway:/app
+    working_dir: /app
+    command: node server.js
+    restart: unless-stopped
+    environment:
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      # OLLAMA_HOST is optional — only if running local models
+      - OLLAMA_HOST=http://host.docker.internal:11434
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+<pre><code>
+<h3>Gateway Server (server.js)</h3>
+
+<pre><code>const express = require('express');
+const app = express();
+app.use(express.json());
+
+const PROVIDERS = [
+  {
+    name: 'deepseek',
+    priority: 1,
+    url: 'https://api.deepseek.com/v1/chat/completions',
+    key: process.env.DEEPSEEK_API_KEY,
+    maxRetries: 2,
+    costPer1kTokens: 0.00014
+  },
+  {
+    name: 'openai',
+    priority: 2,
+    url: 'https://api.openai.com/v1/chat/completions',
+    key: process.env.OPENAI_API_KEY,
+    maxRetries: 2,
+    costPer1kTokens: 0.0015
+  }
+];
+
+// Circuit breaker state
+const failures = {};
+const FAILURE_THRESHOLD = 3;
+const COOLDOWN_MS = 30000;
+
+async function tryProvider(provider, messages) {
+  const now = Date.now();
+  if (failures[provider.name]?.count >= FAILURE_THRESHOLD &&
+      now - failures[provider.name].lastFailure < COOLDOWN_MS) {
+    console.log(<code>Circuit open for ${provider.name}, skipping</code>);
+    return null;
+  }
+  try {
+    const res = await fetch(provider.url, {
+      method: 'POST',
+      headers: { 'Authorization': <code>Bearer ${provider.key}</code>, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model: 'deepseek-chat', messages })
+    });
+    if (!res.ok) throw new Error(<code>HTTP ${res.status}</code>);
+    const data = await res.json();
+    failures[provider.name] = { count: 0 };
+    return { provider: provider.name, cost: data.usage?.total_tokens * provider.costPer1kTokens, content: data.choices[0].message.content };
+  } catch (e) {
+    failures[provider.name] = { count: (failures[provider.name]?.count || 0) + 1, lastFailure: Date.now() };
+    return null;
+  }
+}
+
+app.post('/v1/chat', async (req, res) => {
+  const sorted = [...PROVIDERS].sort((a, b) => a.priority - b.priority);
+  for (const provider of sorted) {
+    const result = await tryProvider(provider, req.body.messages);
+    if (result) return res.json(result);
+  }
+  res.status(503).json({ error: 'All providers failed' });
+});
+
+app.get('/health', (req, res) => res.json({ status: 'ok', providers: PROVIDERS.length }));
+app.listen(3002, () => console.log('AI Gateway on :3002'));
+<pre><code>
+<h3>n8n Integration</h3>
+
+In your n8n workflow, replace individual AI nodes with an HTTP Request node pointing to your gateway:
+
+- <strong>URL</strong>: <code>http://localhost:3002/v1/chat</code>
+- <strong>Method</strong>: POST
+- <strong>Body</strong>: <code>{"messages": [{"role":"user","content":"{{ $json.input }}"}] }</code>
+- <strong>Response</strong>: Extract <code>content</code> field
+
+<h2>Production Hardening</h2>
+
+<h3>Health Check Integration</h3>
+
+Add to your docker-compose monitoring stack:
+
+<pre><code>healthcheck:
+  test: ["CMD", "wget", "-qO-", "http://localhost:3002/health"]
+  interval: 30s
+  timeout: 5s
+  retries: 3
+<pre><code>
+<h3>Cost Tracking</h3>
+
+The gateway returns <code>cost</code> in each response. Log these to a file or Postgres for monthly analysis:
+
+<pre><code>docker logs ai-gateway 2>&1 | grep "cost:" | awk '{sum+=$NF} END {print "Total cost: $" sum}'
+<pre><code>
+<h3>Graceful Degradation</h3>
+
+When all cloud providers are down, the gateway falls back to local models via OLLAMA:
+
+<pre><code>if (process.env.OLLAMA_HOST) {
+  PROVIDERS.push({
+    name: 'ollama',
+    priority: 3,
+    url: <code>${process.env.OLLAMA_HOST}/api/chat</code>,
+    costPer1kTokens: 0  // Local = free
+  });
+}
+<pre><code>
+<h2>Resource Analysis</h2>
+
+| Component | RAM | CPU | Notes |
+|-----------|:---:|:---:|-------|
+| Gateway container | ~25 MB | <0.1 core | Almost negligible |
+| OLLAMA (if used) | ~500 MB | 1 core | Only for fallback |
+| <strong>Total overhead</strong> | <strong>25-525 MB</strong> | <strong><1.1 core</strong> | |
+
+On a 2C4G VPS, the gateway adds 0.6-13% overhead. Enable OLLAMA only when you actually need local fallback.
+
+<h2>Summary</h2>
+
+A $0/month self-built AI gateway gives you enterprise-grade provider failover, cost optimization, and freedom from vendor lock-in. The code is ~60 lines and runs on any 2C4G VPS alongside your existing n8n deployment.
+
+
+<hr>
+<footer><p>Part of <a href="https://github.com/lu7897859-tech/auto-ai-cluster">Auto-AI-Cluster</a></p></footer>
+</body>
+</html>
