@@ -1,0 +1,26 @@
+Title: Auto-AI-Cluster Specification Series
+Source: https://lu7897859-tech.github.io/auto-ai-cluster/
+Date: 2026-07-19
+
+Survival-First Architecture for Autonomous AI Clusters
+
+This document specifies a production-grade architecture for deploying autonomous AI agent clusters on 2 CPU / 4 GB RAM virtual private servers at approximately  per month infrastructure cost.
+
+The architecture consists of four core components:
+
+1. n8n Workflow Engine (stateless, 512MB RAM allocated)
+2. PostgreSQL with Patroni High-Availability (1GB RAM, synchronous replication, auto-failover under 15 seconds)
+3. RSA-4096 License Authentication Agent (128MB RAM, challenge-response protocol, 7-day offline grace period)
+4. AI API Security Gateway (128MB RAM, multi-provider circuit breaker: DeepSeek primary at .14 per million tokens, OpenAI fallback at .50 per million tokens, local OLLAMA as last resort at zero cost)
+
+Deployment: Single docker-compose.yml file. One-command deploy: docker compose up -d
+
+Enterprise variant: Kubernetes Helm chart with horizontal pod autoscaling, distributor license tracking, commission engine (30% first order / 15% renewal), and Grafana monitoring dashboard.
+
+Cost Analysis: Self-hosted cluster at -55 per month versus equivalent cloud managed services at -414 per month. Break-even at 3 months. Three-year total cost of ownership: -1,980 self-hosted versus ,304-14,904 cloud equivalent.
+
+Design Philosophy: Survival-first architecture prioritizes operational continuity over feature completeness. Each component is independently crash-recoverable. The system degrades gracefully during internet outages by falling back to local language models. Security is enforced at the license layer using asymmetric cryptography.
+
+License: MIT (community edition). Enterprise edition requires subscription.
+
+See also: SPEC-001 through SPEC-004 in project repository.
