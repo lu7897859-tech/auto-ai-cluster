@@ -109,3 +109,7 @@ Enterprise Edition and Form-B products require separate licensing.
 ---
 
 *Engineering thinking for AI infrastructure problems.*
+
+## Product & Demand Validation
+
+→ [**View product details & register interest**](https://lu7897859-tech.github.io/auto-ai-cluster/product.html)
