@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>15 — Rate Limiting & API Security for Your 2C4G AI Cluster | Auto-AI-Cluster Blog</title>
+<meta name="description" content="Implement rate limiting, Fail2Ban, and API key authentication on a 2C4G VPS — for under 50 MB RAM overhead. Defense-in-depth for self-hosted AI clusters.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/">
+<meta property="og:image" content="https://lu7897859-tech.github.io/auto-ai-cluster/og-image.svg">
+<style>
+body{max-width:800px;margin:0 auto;padding:20px;font-family:-apple-system,sans-serif;line-height:1.8;color:#c9d1d9;background:#0d1117}
+h1{color:#58a6ff;border-bottom:1px solid #30363d;padding-bottom:8px}
+h2{color:#79c0ff;margin-top:32px}
+h3{color:#d2a8ff;margin-top:24px}
+a{color:#58a6ff}
+pre{background:#161b22;padding:14px;border-radius:6px;overflow-x:auto;font-size:14px;border:1px solid #30363d}
+code{background:#161b22;padding:2px 6px;border-radius:3px;font-size:14px}
+pre code{background:none;padding:0}
+table{border-collapse:collapse;width:100%;margin:16px 0}
+th,td{border:1px solid #30363d;padding:8px 12px;text-align:left}
+th{background:#161b22}
+small{color:#8b949e}
+.tag{display:inline-block;background:#1f2937;color:#58a6ff;padding:2px 10px;border-radius:12px;font-size:13px;margin-right:6px}
+nav{margin-bottom:20px;font-size:14px}
+nav a{color:#8b949e;text-decoration:none}
+nav a:hover{color:#58a6ff}
+hr{border:none;border-top:1px solid #30363d}
+ul,ol{padding-left:24px}
+li{margin:4px 0}
+</style>
+</head>
+<body>
+<nav><a href="https://lu7897859-tech.github.io/auto-ai-cluster/">Home</a> &rsaquo; <a href="/auto-ai-cluster/docs/blog/index.html">Blog</a></nav>
+<h1>15 — Rate Limiting & API Security for Your 2C4G AI Cluster</h1>
+<p><small>Published: 2026-07-21 | Tags: <span class="tag">Nginx</span><span class="tag">Fail2Ban</span><span class="tag">Security</span><span class="tag">2C4G</span><span class="tag">Rate-Limiting</span><span class="tag">Docker</span><span class="tag">DevOps</span></small></p>
+
+<p>When you expose any service to the internet on a $5 VPS, you will get hammered. Automated bots, credential stuffing, and runaway loops from misconfigured agents — all will find your endpoint within hours of going live.</p>
+<p>This post covers three layers of defense you can implement on a 2C4G VPS without spending extra money or adding meaningful latency.</p>
+
+<h2>1. Nginx Rate Limiting</h2>
+<p>The simplest first line of defense lives in your reverse proxy. Nginx's <code>limit_req_zone</code> creates a shared memory zone to track request rates per key (IP, API key, etc.).</p>
+<pre><code># /etc/nginx/conf.d/ratelimit.conf
+
+# Define a zone: 10MB shared memory, 1 request per second burst to 5
+limit_req_zone $binary_remote_addr zone=ip_limit:10m rate=1r/s;
+
+# More generous for authenticated API calls
+limit_req_zone $http_x_api_key zone=api_limit:10m rate=10r/s;
+
+server {
+    # Apply to unauthenticated endpoints
+    location /n8n/ {
+        limit_req zone=ip_limit burst=5 nodelay;
+        proxy_pass http://127.0.0.1:5678;
+    }
+
+    # Apply to AI gateway
+    location /api/ {
+        limit_req zone=api_limit burst=20 nodelay;
+        proxy_pass http://127.0.0.1:3000;
+    }
+}</code></pre>
+<p>Key parameters:</p>
+<ul>
+<li><code>rate=1r/s</code> = 1 request per second per IP</li>
+<li><code>burst=5</code> = allow 5 queued requests if burst exceeded</li>
+<li><code>nodelay</code> = don't slow down, just reject excess immediately</li>
+</ul>
+<p>Test it:</p>
+<pre><code># 10 rapid requests — most should get 503
+for i in {1..10}; do curl -s -o /dev/null -w "%{http_code}\n" http://your-vps/n8n/; done</code></pre>
+
+<h2>2. Fail2Ban: Automated IP Banning</h2>
+<p>Fail2Ban watches your Nginx logs and bans IPs that repeatedly trigger 429/503 errors or search for exploit patterns.</p>
+<pre><code># Install
+apt install fail2ban -y</code></pre>
+<p>Create <code>/etc/fail2ban/jail.local</code>:</p>
+<pre><code>[nginx-429]
+enabled  = true
+port     = http,https
+filter   = nginx-429
+logpath  = /var/log/nginx/access.log
+maxretry = 20
+findtime = 60
+bantime  = 3600
+
+[nginx-noscript]
+enabled  = true
+port     = http,https
+filter   = nginx-noscript
+logpath  = /var/log/nginx/access.log
+maxretry = 3
+findtime = 600
+bantime  = 86400</code></pre>
+<pre><code>systemctl enable fail2ban
+systemctl start fail2ban
+fail2ban-client status</code></pre>
+<p>Check who got banned:</p>
+<pre><code>fail2ban-client status nginx-429</code></pre>
+<p>On a fresh VPS exposed to the internet, you will be surprised how fast the bans accumulate.</p>
+
+<h2>3. API Key Authentication Layer</h2>
+<p>For your AI gateway or n8n webhook, add a simple API key check at the Nginx level before requests ever reach your application:</p>
+<pre><code>location /api/v1/ {
+    # Reject requests without the X-API-Key header
+    if ($http_x_api_key = "") {
+        return 401;
+    }
+
+    # Reject requests with wrong key
+    if ($http_x_api_key != "your-secret-key-here") {
+        return 403;
+    }
+
+    limit_req zone=api_limit burst=20 nodelay;
+    proxy_pass http://127.0.0.1:3000;
+}</code></pre>
+<p>For multiple tenants, use a map:</p>
+<pre><code>map $http_x_api_key $allowed_ips {
+    default                      "";
+    "tenant-a-key"              "10.0.0.0/8,172.16.0.0/12";
+    "tenant-b-key"              "192.168.0.0/16";
+}</code></pre>
+
+<h2>4. Docker-Level Resource Guardrails</h2>
+<p>Even if an attacker gets through your network layer, container memory limits prevent one container from consuming your entire 4 GB RAM:</p>
+<pre><code># docker-compose.yml — always set these
+services:
+  n8n:
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
+
+  ai-gateway:
+    deploy:
+      resources:
+        limits:
+          memory: 1024M
+
+  postgres:
+    deploy:
+      resources:
+        limits:
+          memory: 512M</code></pre>
+<p>With 512 MB for Postgres, 512 MB for n8n, and 1024 MB for your AI gateway, you have 2 GB headroom for the OS, Nginx, and emergency.</p>
+
+<h2>5. Monitoring Your Attack Surface</h2>
+<p>Add this to your Prometheus scrape config to alert when ban counts spike (attack underway):</p>
+<pre><code>scrape_configs:
+  - job_name: 'fail2ban'
+    static_configs:
+      - targets: ['localhost:9101']</code></pre>
+<p>A spike in <code>fail2ban_banned_total</code> is often your earliest signal that an automated attack is in progress.</p>
+
+<h2>Putting It Together</h2>
+<pre><code>Internet → Nginx (rate limit) → Fail2Ban (ban after abuse)
+                                      ↓
+                            Docker (memory limits)
+                                      ↓
+                            Your App (API key auth)</code></pre>
+<p>On a 2C4G VPS this whole stack uses under 50 MB RAM. The defense-in-depth approach means no single layer is relied upon to stop everything.</p>
+<p>Configure rate limits generously enough that real users and legitimate automated agents don't hit them, but tightly enough that credential stuffing and enumeration attacks die fast.</p>
+
+<hr>
+<p><small>Part of the <a href="https://github.com/lu7897859-tech/auto-ai-cluster">Auto-AI-Cluster</a> series. Deploy resilient, affordable AI infrastructure — one post at a time.</small></p>
+</body>
+</html>

@@ -2,9 +2,10 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://lu7897859-tech.github.io/auto-ai-cluster/</loc><lastmod>2026-07-20</lastmod></url>
   <url><loc>https://lu7897859-tech.github.io/auto-ai-cluster/white-paper.html</loc><lastmod>2026-07-20</lastmod></url>
-  <url><loc>https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/index.html</loc><lastmod>2026-07-20</lastmod></url>
+  <url><loc>https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/index.html</loc><lastmod>2026-07-21</lastmod></url>
   <url><loc>https://lu7897859-tech.github.io/auto-ai-cluster/payment/checkout.html</loc><lastmod>2026-07-20</lastmod></url>
   <url><loc>https://lu7897859-tech.github.io/auto-ai-cluster/payment/trial.html</loc><lastmod>2026-07-20</lastmod></url>
+  <url><loc>https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/15-rate-limiting-api-security-2c4g.html</loc><lastmod>2026-07-21</lastmod></url>
   <url><loc>https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/14-prometheus-grafana-2c4g-monitoring.html</loc><lastmod>2026-07-20</lastmod></url>
   <url><loc>https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/13-cicd-vps-autodeploy.html</loc><lastmod>2026-07-16</lastmod></url>
   <url><loc>https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/12-telegram-ai-bot-n8n-tutorial.html</loc><lastmod>2026-07-16</lastmod></url>
@@ -21,12 +22,6 @@
   <url><loc>https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/01-survival-first-architecture.html</loc><lastmod>2026-07-16</lastmod></url>
   <url>
     <loc>https://lu7897859-tech.github.io/auto-ai-cluster/test-signal.html</loc>
-    <lastmod>2026-07-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://lu7897859-tech.github.io/auto-ai-cluster/car-listings/2010-nissan-tiida.html</loc>
     <lastmod>2026-07-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
