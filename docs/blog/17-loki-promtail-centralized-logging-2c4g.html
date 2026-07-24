@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>17 — Centralized Logging for Your 2C4G AI Cluster: Loki, Promtail & Grafana | Auto-AI-Cluster Blog</title>
+<meta name="description" content="Run Grafana Loki + Promtail for centralized logging on a 2C4G VPS under 256 MB RAM. Docker log aggregation with LogQL and Grafana.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/">
+<meta property="og:image" content="https://lu7897859-tech.github.io/auto-ai-cluster/og-image.svg">
+<style>
+body{max-width:800px;margin:0 auto;padding:20px;font-family:-apple-system,sans-serif;line-height:1.8;color:#c9d1d9;background:#0d1117}
+h1{color:#58a6ff;border-bottom:1px solid #30363d;padding-bottom:8px}
+h2{color:#79c0ff;margin-top:32px}
+h3{color:#d2a8ff;margin-top:24px}
+a{color:#58a6ff}
+pre{background:#161b22;padding:14px;border-radius:6px;overflow-x:auto;font-size:14px;border:1px solid #30363d}
+code{background:#161b22;padding:2px 6px;border-radius:3px;font-size:14px}
+pre code{background:none;padding:0}
+table{border-collapse:collapse;width:100%;margin:16px 0}
+th,td{border:1px solid #30363d;padding:8px 12px;text-align:left}
+th{background:#161b22}
+small{color:#8b949e}
+.tag{display:inline-block;background:#1f2937;color:#58a6ff;padding:2px 10px;border-radius:12px;font-size:13px;margin-right:6px}
+nav{margin-bottom:20px;font-size:14px}
+nav a{color:#8b949e;text-decoration:none}
+nav a:hover{color:#58a6ff}
+hr{border:none;border-top:1px solid #30363d}
+ul,ol{padding-left:24px}
+li{margin:4px 0}
+p{margin:14px 0}
+</style>
+</head>
+<body>
+<nav><a href="https://lu7897859-tech.github.io/auto-ai-cluster/">Home</a> &middot; <a href="https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/index.html">Blog</a></nav>
+
+<h1>17 — Centralized Logging for Your 2C4G AI Cluster: Loki, Promtail & Grafana</h1>
+<p><small>Published 2026-07-25 &middot; 12 min read</small></p>
+
+<h1>17 — Centralized Logging for Your 2C4G AI Cluster: Loki, Promtail & Grafana</h1>
+
+<strong>2026-07-25</strong> | 2C4G AI Cluster Series
+
+<p>You have Prometheus scraping metrics and Grafana dashboards lighting up. But when n8n throws an opaque 502 error at 3 AM, or a container crashes and restarts before you can <code>docker logs</code>, metrics alone won't tell you what happened.</p>
+
+<p>Logs are the other half of observability. On a 2C4G VPS, traditional solutions like the ELK stack (Elasticsearch + Logstash + Kibana) are out of the question — Elasticsearch alone wants 4 GB RAM minimum.</p>
+
+<p>Enter <strong>Grafana Loki</strong>: a log aggregation system designed for the resource-constrained. It doesn't index the content of logs — it indexes only metadata labels, making it dramatically lighter.</p>
+
+<p>This post covers running Loki + Promtail on a 2C4G VPS alongside your existing monitoring stack, consuming under 256 MB RAM total.</p>
+
+<hr>
+
+<h2>Why Loki Instead of ELK?</h2>
+
+<tr><td>Feature</td><td>Elasticsearch</td><td>Loki</td></tr>
+
+<tr><td>RAM (idle)</td><td>1.5–4 GB</td><td>40–80 MB</td></tr>
+<tr><td>Disk index</td><td>Full-text inverted index</td><td>Label-only (like Prometheus)</td></tr>
+<tr><td>Query language</td><td>ES DSL / KQL</td><td>LogQL (PromQL-like)</td></tr>
+<tr><td>Integration</td><td>Separate stack</td><td>Bolts into existing Grafana</td></tr>
+
+<p>For a 2C4G VPS running n8n, Postgres, and an AI gateway, Loki is the only realistic choice for centralized logging.</p>
+
+<hr>
+
+<h2>Architecture</h2>
+
+<pre><code>Container A (n8n)          Container B (Postgres)     Container C (AI Gateway)
+     │                           │                           │
+     ▼                           ▼                           ▼
+  Promtail─────────────────────Promtail─────────────────────Promtail
+     │                           │                           │
+     └───────────────────────────┬───────────────────────────┘
+                                 ▼
+                              Loki
+                                 │
+                                 ▼
+                            Grafana
+                                 │
+                                 ▼
+                         Browser / Telegram Alert
+<pre><code>
+Promtail runs on each node (or as a single sidecar reading Docker logs), attaches labels, and pushes structured log entries to Loki. Loki stores them cheaply. Grafana queries Loki via LogQL alongside your Prometheus metrics.
+
+<hr>
+
+<h2>Step 1: Deploy Loki (Single Binary, No Scaling)</h2>
+
+Loki has a <code>single-binary</code> mode perfect for 2C4G. Add it to your <code>docker-compose.yml</code>:
+
+<pre><code>services:
+  # … your existing services …
+
+  loki:
+    image: grafana/loki:3.0
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./config/loki:/etc/loki
+      - loki_data:/loki
+    command: -config.file=/etc/loki/loki-config.yaml
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+        reservations:
+          memory: 64M
+    restart: unless-stopped
+
+  promtail:
+    image: grafana/promtail:3.0
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./config/promtail:/etc/promtail
+    command: -config.file=/etc/promtail/promtail-config.yaml
+    deploy:
+      resources:
+        limits:
+          memory: 64M
+        reservations:
+          memory: 32M
+    restart: unless-stopped
+
+volumes:
+  loki_data:
+<pre><code>
+This adds <strong>under 200 MB</strong> of committed memory to your stack.
+
+<hr>
+
+<h2>Step 2: Loki Configuration</h2>
+
+Create <code>config/loki/loki-config.yaml</code>:
+
+<pre><code>auth_enabled: false
+
+server:
+  http_listen_port: 3100
+  grpc_listen_port: 9096
+
+common:
+  path_prefix: /loki
+  storage:
+    filesystem:
+      chunks_directory: /loki/chunks
+      rules_directory: /loki/rules
+  replication_factor: 1
+  ring:
+    instance_addr: 127.0.0.1
+    kvstore:
+      store: inmemory
+
+schema_config:
+  configs:
+    - from: 2024-01-01
+      store: boltdb-shipper
+      object_store: filesystem
+      schema: v12
+      index:
+        prefix: index_
+        period: 24h
+
+limits_config:
+  ingestion_rate_mb: 2
+  ingestion_burst_size_mb: 4
+  max_global_streams_per_user: 1000
+
+table_manager:
+  retention_deletes_enabled: true
+  retention_period: 168h  # 7 days — enough for a 2C4G VPS
+<pre><code>
+Key choices for 2C4G:
+- <strong>Filesystem storage</strong> instead of S3/GCS — no external dependency
+- <strong>7-day retention</strong> — keeps disk usage under 2 GB for typical traffic
+- <strong>Replication factor 1</strong> — we're single-node; no need for replicas
+- <strong>Ingestion rate limited</strong> — prevents a log-spamming container from OOMing Loki
+
+<hr>
+
+<h2>Step 3: Promtail Configuration</h2>
+
+Create <code>config/promtail/promtail-config.yaml</code>:
+
+<pre><code>server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+
+scrape_configs:
+  - job_name: docker
+    docker_sd_configs:
+      - host: unix:///var/run/docker.sock
+        refresh_interval: 5s
+    relabel_configs:
+      - source_labels: ['__meta_docker_container_name']
+        regex: '/(.*)'
+        target_label: 'container'
+      - source_labels: ['__meta_docker_container_log_stream']
+        target_label: 'stream'
+      - source_labels: ['__meta_docker_container_label_com_docker_compose_service']
+        target_label: 'service'
+      - action: labelmap
+        regex: '__meta_docker_container_label_(.+)'
+<pre><code>
+This auto-discovers all Docker containers and labels logs with <code>container</code>, <code>service</code>, and any Docker labels you've set.
+
+<hr>
+
+<h2>Step 4: Add Grafana Loki Datasource</h2>
+
+In Grafana (already deployed from blog #14), add a Loki datasource:
+
+<strong>URL</strong>: <code>http://loki:3100</code>
+
+Then you can query logs alongside metrics. The killer feature: <strong>correlate a metrics spike with log context</strong>.
+
+Example LogQL query — find errors in the last hour:
+
+<pre><code>{service="n8n"} |= "error" |= "exception"
+<pre><code>
+Or — count errors per container:
+
+<pre><code>sum by (container) (count_over_time({job="docker"} |= "error"[5m]))
+<pre><code>
+<hr>
+
+<h2>Step 5: Structured Logging — Make Your Logs Useful</h2>
+
+Loki is powerful only if your logs have structure. Add structured logging to your containers.
+
+<h3>n8n (via environment variable)</h3>
+
+<pre><code>services:
+  n8n:
+    environment:
+      - N8N_LOG_LEVEL=info
+      - N8N_LOG_OUTPUT=json
+<pre><code>
+PostgreSQL emits structured logs by default. Your AI gateway should use a JSON-formatted logger (pino, winston, or similar).
+
+<h3>Example: structured log entry</h3>
+
+<pre><code>{
+  "level": "error",
+  "service": "ai-gateway",
+  "request_id": "req_abc123",
+  "duration_ms": 3050,
+  "error": "upstream_timeout",
+  "model": "deepseek-chat",
+  "timestamp": "2026-07-25T03:00:00Z"
+}
+<pre><code>
+Query this directly:
+
+<pre><code>{service="ai-gateway"} | json | duration_ms > 2000 | model="deepseek-chat"
+<pre><code>
+This single query would have saved me three hours of debugging last month.
+
+<hr>
+
+<h2>Step 6: Disk Budget — Loki on a 2C4G SSD</h2>
+
+On a 20 GB VPS, every gigabyte matters. Here's a realistic budget:
+
+<tr><td>Component</td><td>Daily Growth</td><td>7-Day Total</td></tr>
+
+<tr><td>n8n logs</td><td>~80 MB</td><td>560 MB</td></tr>
+<tr><td>Postgres logs</td><td>~30 MB</td><td>210 MB</td></tr>
+<tr><td>AI gateway logs</td><td>~120 MB</td><td>840 MB</td></tr>
+<tr><td>System (journald)</td><td>~40 MB</td><td>280 MB</td></tr>
+<tr><td><strong>Total</strong></td><td><strong>~270 MB</strong></td><td><strong>~1.9 GB</strong></td></tr>
+
+To stay safe, monitor disk usage with a Prometheus alert:
+
+<pre><code>groups:
+  - name: loki
+    rules:
+      - alert: LokiDiskUsageHigh
+        expr: (loki_ingester_memory_streams / 1000) > 800
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Loki approaching stream limit on 2C4G VPS"
+<pre><code>
+<hr>
+
+<h2>Putting It Together: Observability Stack on 2C4G</h2>
+
+<pre><code>           ┌─────────────────────────────────┐
+           │        2C4G VPS Total            │
+           │                                   │
+           │  Prometheus    (64 MB)            │
+           │  Grafana       (64 MB)            │
+           │  Loki          (128 MB)           │
+           │  Promtail      (64 MB)            │
+           │  cAdvisor      (32 MB)            │
+           │  ─────────────────────            │
+           │  Total monitor: 352 MB            │
+           │                                   │
+           │  n8n         (256 MB)             │
+           │  Postgres    (512 MB)             │
+           │  AI Gateway  (1024 MB)            │
+           │  ─────────────────────            │
+           │  Total app:   1792 MB             │
+           │                                   │
+           │  Headroom:     ~1.8 GB            │
+           └─────────────────────────────────┘
+<pre><code>
+Metrics (Prometheus) tell you *what* broke. Logs (Loki) tell you *why*. With both on your 2C4G VPS consuming under 400 MB combined, there's no excuse not to run the full observability stack.
+
+<hr>
+
+<h2>Quick-Start: Run This Now</h2>
+
+<pre><code><h1>Create config directories</h1>
+mkdir -p config/loki config/promtail
+
+<h1>Copy the configs above into place, then</h1>
+docker compose up -d loki promtail
+
+<h1>Verify Loki is receiving logs</h1>
+curl -s http://localhost:3100/loki/api/v1/tail?query=%7Bjob%3D%22docker%22%7D
+
+<h1>In Grafana, add Loki datasource → http://loki:3100</h1>
+<h1>Query: {service="n8n"} |= "error"</h1>
+<pre><code>
+If you see log lines streaming in the tail response, your centralized logging pipeline is live. Now go break something — your logs will tell you exactly why.
+
+<hr>
+
+*Part of the <a href="https://github.com/lu7897859-tech/auto-ai-cluster">Auto-AI-Cluster</a> series. Deploy resilient, affordable AI infrastructure — one post at a time.*
+
+
+
+<hr>
+<footer><p><small>Part of <a href="https://github.com/lu7897859-tech/auto-ai-cluster">Auto-AI-Cluster</a>. Published 2026-07-25.</small></p></footer>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"17 — Centralized Logging for Your 2C4G AI Cluster: Loki, Promtail & Grafana","datePublished":"2026-07-25","author":{"@type":"Person","name":"Auto-AI-Cluster"},"description":"Run Grafana Loki + Promtail for centralized logging on a 2C4G VPS under 256 MB RAM. Docker log aggregation with LogQL and Grafana."}</script>
+</body>
+</html>

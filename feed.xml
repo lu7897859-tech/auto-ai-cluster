@@ -3,9 +3,30 @@
 <title>Auto-AI-Cluster Blog</title>
 <subtitle>Self-hosted autonomous AI cluster frameworks and tutorials</subtitle>
 <link href="https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/index.html"/>
-<updated>2026-07-19T00:00:00Z</updated>
+<updated>2026-07-25T00:00:00Z</updated>
 <author><name>Auto-AI-Cluster Team</name></author>
 <id>https://lu7897859-tech.github.io/auto-ai-cluster/feed.xml</id>
+<entry>
+<title>17 — Centralized Logging for Your 2C4G AI Cluster: Loki, Promtail &amp; Grafana</title>
+<link href="https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/17-loki-promtail-centralized-logging-2c4g.html"/>
+<id>https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/17-loki-promtail-centralized-logging-2c4g.html</id>
+<updated>2026-07-25T00:00:00Z</updated>
+<summary>You have Prometheus scraping metrics and Grafana dashboards lighting up. But when n8n throws an opaque 502 error at 3 AM</summary>
+</entry>
+<entry>
+<title>16 — Automated Backup &amp; Recovery for Your 2C4G AI Cluster</title>
+<link href="https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/16-backup-recovery-2c4g.html"/>
+<id>https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/16-backup-recovery-2c4g.html</id>
+<updated>2026-07-24T00:00:00Z</updated>
+<summary>16 — Automated Backup &amp; Recovery for Your 2C4G AI Cluster</summary>
+</entry>
+<entry>
+<title>15 — Rate Limiting &amp; API Security for Your 2C4G AI Cluster</title>
+<link href="https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/15-rate-limiting-api-security-2c4g.html"/>
+<id>https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/15-rate-limiting-api-security-2c4g.html</id>
+<updated>2026-07-21T00:00:00Z</updated>
+<summary>15 — Rate Limiting &amp; API Security for Your 2C4G AI Cluster</summary>
+</entry>
 <entry>
 <title>13 — Zero-Downtime CI/CD for Self-Hosted AI Clusters: GitHub Actions → 2C4G VPS</title>
 <link href="https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/13-cicd-vps-autodeploy.html"/>
@@ -24,7 +45,7 @@
 <title>Multi-Model AI Gateway: Route Between OpenAI, DeepSeek, and Local LLMs on a 2C4G VPS</title>
 <link href="https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/11-ai-model-gateway-proxy.html"/>
 <id>https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/11-ai-model-gateway-proxy.html</id>
-<updated>2026-07-16T00:00:00Z</updated>
+<updated>2026-07-17T00:00:00Z</updated>
 <summary>Multi-Model AI Gateway: Route Between OpenAI, DeepSeek, and Local LLMs on a 2C4G VPS</summary>
 </entry>
 <entry>
