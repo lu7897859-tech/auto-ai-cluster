@@ -1,8 +1,11 @@
 # Auto-AI-Cluster
-> Production-grade Autonomous AI Cluster — 2C4G to Production
+> Production-grade Autonomous AI Cluster 鈥?2C4G to Production
 
 ## Quick Facts
 - **GitHub**: https://github.com/lu7897859-tech/auto-ai-cluster
+- **Product Page (buy)**: https://lu7897859-tech.github.io/auto-ai-cluster/product.html
+- **Form-A $49 (Personal License)**: https://lunarwave8803.gumroad.com/l/jrsqd
+- **Form-B $29 (Architecture Blueprint)**: https://lunarwave8803.gumroad.com/l/hvsxb
 - **White Paper PDF**: https://github.com/lu7897859-tech/auto-ai-cluster/releases/download/v1.0.0/Form-B-Architecture-Paper.pdf
 - **Project Page**: https://lu7897859-tech.github.io/auto-ai-cluster/
 - **White Paper Page**: https://lu7897859-tech.github.io/auto-ai-cluster/white-paper.html
@@ -18,9 +21,9 @@
 - RSA-2048 authorization system with machine fingerprint binding
 
 ### White Paper (11 Chapters)
-1. Why n8n? — Workflow Engine Selection (n8n vs Airflow vs Prefect vs Temporal)
+1. Why n8n? 鈥?Workflow Engine Selection (n8n vs Airflow vs Prefect vs Temporal)
 2. 2C4G Resource Allocation Philosophy
-3. Docker Compose → K8s Migration Path
+3. Docker Compose 鈫?K8s Migration Path
 4. Network Topology & Backup Strategy
 5. Why AI-API Gateway?
 6. Three-Layer Audit Mechanism
@@ -32,14 +35,14 @@
 
 ### Core Philosophy
 - **Survival-First**: Core flow always has priority. Circuit breaker releases non-critical services.
-- **Minimal Logic**: Every component must fit on one A4 page. System survival ∝ 1/(modules × interfaces × states).
+- **Minimal Logic**: Every component must fit on one A4 page. System survival 鈭?1/(modules 脳 interfaces 脳 states).
 - **2C4G Constraint-Driven**: Extreme constraints produce better designs. Each service does exactly one thing.
 
-### Monetization
-- Community Edition: Free (AGPLv3)
-- Enterprise Edition (K8s): $6,800
-- Reseller: 15-20% commission
-- Payment: Ko-fi, Gumroad, PayPal
+### Buying Guide
+- Which product should you buy? (blog-19): https://lu7897859-tech.github.io/auto-ai-cluster/blog-19.html
+- Self-hosted AI in 2026 (blog-20): https://lu7897859-tech.github.io/auto-ai-cluster/blog-20.html
+- Form-A $49 (code, unzip and deploy): https://lunarwave8803.gumroad.com/l/jrsqd
+- Form-B $29 (architecture paper + prompts): https://lunarwave8803.gumroad.com/l/hvsxb
 
 ## Downloads
 - White Paper: https://github.com/lu7897859-tech/auto-ai-cluster/releases/download/v1.0.0/Form-B-Architecture-Paper.pdf
