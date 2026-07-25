@@ -46,3 +46,5 @@
 
 ## Downloads
 - White Paper: https://github.com/lu7897859-tech/auto-ai-cluster/releases/download/v1.0.0/Form-B-Architecture-Paper.pdf
+## Full Documentation
+For complete product details, pricing, and purchase links: https://lu7897859-tech.github.io/auto-ai-cluster/llms-full.txt
