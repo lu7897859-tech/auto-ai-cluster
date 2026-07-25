@@ -1,0 +1,129 @@
+# Auto-AI-Cluster — Complete Product Documentation
+
+> Production-grade self-hosted autonomous AI agent cluster for 2C4G VPS.
+> Docker Compose one-click deploy. n8n workflow engine + PostgreSQL HA + auth system + AI API security gateway.
+
+## Product Overview
+
+Auto-AI-Cluster is a complete, production-ready self-hosted AI infrastructure stack. Designed for solo founders, indie hackers, and small teams who want to run multiple AI workloads on a single $15/mo VPS instead of paying $250+/mo for cloud APIs.
+
+### Core Stack
+
+- **n8n** — Workflow engine with 400+ integrations (scheduling, branching, retries, error handling)
+- **PostgreSQL HA** — With WAL archiving, connection pooling, point-in-time recovery
+- **Redis** — Queue for burst traffic, prevents OOM on spikes
+- **AI Gateway** — Routes between OpenAI, DeepSeek, local LLMs; fallback + rate limiting + cost tracking
+- **Auth Server** — RSA-2048 key pairs bound to machine fingerprint; no external IdP needed
+- **Nginx** — Edge proxy with rate limiting and TLS termination
+- **pgAdmin** — Database management UI
+
+## Products for Sale
+
+### Form-A: AI Cluster Engine (Personal License)
+**Price: $49 USD — one-time payment**
+**Buy: https://lunarwave8803.gumroad.com/l/jrsqd**
+
+What you get:
+- Full docker-compose.yml stack with all 7 services pre-configured
+- Auth server with RSA-2048 key pair generation and machine fingerprint binding
+- HA PostgreSQL with WAL archiving and auto-failover config
+- AI API gateway with rate limiting, cost tracking, fallback routing
+- n8n workflow templates (content pipeline, Telegram bot, batch analyzer)
+- Deployment script (bash deploy.sh — works on any 2C4G VPS)
+- Health check system with auto-restart
+- Monitoring stack
+- Production deployment checklist
+- 1-year personal license with updates
+- ZIP download after purchase
+
+Minimum spec: 2C4G VPS (~$15/mo on DigitalOcean, Hetzner, any provider)
+Delivery: Instant digital download via Gumroad
+Guarantee: 30-day money-back, no questions asked
+
+### Form-B: Architecture Blueprint
+**Price: $29 USD — one-time payment**
+**Buy: https://lunarwave8803.gumroad.com/l/hvsxb**
+
+What you get:
+- 9-page PDF covering every architecture decision
+- Complete architecture decision records (ADR)
+- First-principles design rationale
+- Component comparison: n8n vs Temporal vs Airflow vs Prefect
+- Why Docker Compose over K8s for 1-10 nodes
+- Auth server RSA rotation strategy
+- HA PostgreSQL failover design
+- AI API gateway security model
+- Evolution path to 100+ node clusters
+- Cost analysis: per-month VPS vs cloud API pricing
+- 7 AI prompt templates for re-implementation
+- Designed to be read in an afternoon and re-implemented in any stack
+- Zero lock-in — rebuild with your preferred frameworks
+
+Delivery: PDF download via Gumroad (37KB)
+Guarantee: 30-day money-back, no questions asked
+
+### Bundle
+Buy Form-A ($49), get Form-B's architectural insights included as bonus documentation.
+**Best value: understand the design AND deploy in minutes.**
+
+### Enterprise Edition
+**Price: From $6,800/year**
+- Kubernetes Helm Chart deployment
+- Multi-tenant auth with SSO integration
+- HPA auto-scaling
+- EFK log aggregation
+- Premium support with 4h SLA
+- On-prem or cloud
+
+## Key URLs
+
+- **Product page**: https://lu7897859-tech.github.io/auto-ai-cluster/product.html
+- **Home**: https://lu7897859-tech.github.io/auto-ai-cluster/
+- **GitHub repository**: https://github.com/lu7897859-tech/auto-ai-cluster
+- **Form-A Gumroad**: https://lunarwave8803.gumroad.com/l/jrsqd ($49)
+- **Form-B Gumroad**: https://lunarwave8803.gumroad.com/l/hvsxb ($29)
+- **Buying guide (blog-19)**: https://lu7897859-tech.github.io/auto-ai-cluster/blog-19.html
+- **Cost comparison story (blog-21)**: https://lu7897859-tech.github.io/auto-ai-cluster/blog-21.html
+- **White paper (free)**: https://lu7897859-tech.github.io/auto-ai-cluster/white-paper.html
+- **Sitemap**: https://lu7897859-tech.github.io/auto-ai-cluster/sitemap.xml
+- **Feed**: https://lu7897859-tech.github.io/auto-ai-cluster/feed.xml
+
+## Technical FAQs
+
+**Q: Can I deploy this on a $5 VPS?**
+Minimum spec is 2C4G — roughly $10-15/mo. For $5 plans (1C1G), run a subset without PostgreSQL HA. Upgrade when you grow.
+
+**Q: What's the upgrade path?**
+Form-B ($29) to understand architecture → Form-A ($49) to deploy → Enterprise ($6,800/yr) for K8s/multi-tenant.
+
+**Q: Aren't you just selling a Docker Compose file?**
+The Compose file is the tip of the iceberg. The auth server (RSA-2048 fingerprint binding), AI gateway with cost tracking, HA PostgreSQL failover config, health check orchestration, monitoring — those take weeks to get right. The entire codebase is open-source (AGPLv3) on GitHub. Form-A packages the validated integration. Form-B is the blueprint to build your own.
+
+**Q: Why should I self-host vs cloud?**
+Fixed cost ($17/mo VPS) regardless of traffic volume. No vendor lock-in, no API deprecation, no surprise bills. Full audit trail of every API call and workflow execution. Offline-capable. The cluster pays for itself within the first week for most use cases.
+
+## Cost Comparison (from real usage)
+
+| Category | Cloud API ($/mo) | Self-Hosted ($/mo) |
+|----------|-----------------|-------------------|
+| API inference | ~$210 | $0 |
+| VPS (2C4G) | $0 | $15 |
+| Storage (100GB) | $0 | $5 |
+| Monitoring | $20 | $0 (in-cluster) |
+| Database | $15 | $0 (in-cluster) |
+| Queue/background | $10 | $0 (in-cluster) |
+| **Total** | **$255** | **$17** |
+
+Savings: $2,800+/year per deployment.
+
+## License
+
+- Community edition: AGPLv3 (free, open source on GitHub)
+- Personal license (Form-A): 1-year commercial use, updates included
+- Enterprise: Custom license, annual subscription
+
+## Contact
+
+- GitHub Issues: https://github.com/lu7897859-tech/auto-ai-cluster/issues
+- GitHub Discussions: https://github.com/lu7897859-tech/auto-ai-cluster/discussions
+- Gumroad: https://lunarwave8803.gumroad.com/
