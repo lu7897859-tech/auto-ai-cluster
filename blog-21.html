@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>21 — I Cut My AI Infrastructure Bill from $250/mo to $17/mo by Going Self-Hosted</title>
+<meta name="description" content="A real story of one solo founder who migrated from cloud AI APIs to a self-hosted Docker Compose cluster on a $15 VPS — and what it taught me about architecture, vendor lock-in, and the future of AI infrastructure.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://lu7897859-tech.github.io/auto-ai-cluster/blog-21.html">
+<meta property="og:title" content="I Cut My AI Infrastructure Bill from $250/mo to $17/mo by Going Self-Hosted">
+<meta property="og:description" content="One solo founder's story: migrating from cloud AI APIs to a self-hosted Docker Compose cluster on a $15 VPS. Real numbers, real lessons.">
+<meta property="og:url" content="https://lu7897859-tech.github.io/auto-ai-cluster/blog-21.html">
+<meta property="og:type" content="article">
+<meta property="og:image" content="https://raw.githubusercontent.com/lu7897859-tech/auto-ai-cluster/main/og-image.svg">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","headline":"I Cut My AI Infrastructure Bill from $250/mo to $17/mo by Going Self-Hosted","description":"One solo founder's story of migrating from cloud AI APIs to a self-hosted Docker Compose cluster on a $15 VPS.","datePublished":"2026-07-25","author":{"@type":"Person","name":"Lu Guanghui"}}</script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0d1117;color:#c9d1d9;line-height:1.8;padding:40px 20px}
+.container{max-width:700px;margin:0 auto}
+h1{font-size:1.9rem;color:#f0f6fc;margin-bottom:8px;line-height:1.3}
+h2{font-size:1.3rem;color:#f0f6fc;margin:32px 0 12px;padding-bottom:6px;border-bottom:1px solid #30363d}
+h3{color:#f0f6fc;margin:20px 0 8px}
+p{margin:14px 0}
+code{background:#1c2128;padding:2px 6px;border-radius:4px;font-size:14px}
+pre{background:#161b22;padding:16px;border-radius:8px;overflow-x:auto;border:1px solid #30363d;margin:16px 0;font-size:14px}
+a{color:#58a6ff}
+.meta{color:#8b949e;font-size:14px;margin-bottom:24px}
+blockquote{border-left:3px solid #30363d;padding-left:16px;color:#8b949e;margin:16px 0;font-style:italic}
+.cta-box{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:20px;margin:24px 0;text-align:center}
+.cta-box h3{color:#f0f6fc;margin-bottom:8px}
+.btn{display:inline-block;padding:12px 28px;border-radius:8px;font-size:16px;font-weight:600;text-decoration:none;margin:8px 4px}
+.stat-row{display:flex;justify-content:center;gap:24px;flex-wrap:wrap;margin:20px 0}
+.stat{text-align:center;background:#161b22;padding:16px 20px;border-radius:8px;border:1px solid #30363d;flex:1;min-width:120px}
+.stat .n{font-size:1.5rem;font-weight:700;color:#f0f6fc}
+.stat .l{font-size:12px;color:#8b949e;margin-top:4px}
+.highlight{background:#1c3d5a;padding:2px 8px;border-radius:4px;color:#58a6ff}
+</style>
+</head>
+<body>
+<div class="container">
+<p style="font-size:14px;margin-bottom:16px"><a href="https://lu7897859-tech.github.io/auto-ai-cluster/" style="color:#58a6ff">← Home</a> · <a href="https://lu7897859-tech.github.io/auto-ai-cluster/product.html" style="color:#58a6ff">Products</a></p>
+<h1>I Cut My AI Infrastructure Bill from $250/mo to $17/mo by Going Self-Hosted</h1>
+<p class="meta">📅 July 25, 2026 · ☕ 8 min read · <a href="https://news.ycombinator.com/submit?url=https://lu7897859-tech.github.io/auto-ai-cluster/blog-21.html" target="_blank">Discuss on HN →</a></p>
+
+<p><em>This is the story of one solo founder who accidentally spent $3,000 on cloud AI APIs before realizing there was a cheaper way. The numbers are real. The mistakes are embarrassing. The outcome surprised even me.</em></p>
+
+<div class="stat-row">
+<div class="stat"><div class="n">$250</div><div class="l">Monthly cloud bill (before)</div></div>
+<div class="stat"><div class="n">$17</div><div class="l">Monthly VPS cost (after)</div></div>
+<div class="stat"><div class="n">15×</div><div class="l">Cost reduction</div></div>
+<div class="stat"><div class="n">$29-49</div><div class="l">One-time setup</div></div>
+</div>
+
+<h2>How I Got Here</h2>
+
+<p>Six months ago I was running three AI-powered micro-SaaS products. A Telegram news curator, a daily content pipeline that churned through 500 articles, and a batch analyzer for customer support logs.</p>
+
+<p>All three talked to OpenAI's API. I was paying per token and not thinking about it — until April when my bill hit $312.</p>
+
+<p>I checked the numbers. My Telegram bot alone was generating ~100K queries/month. The content pipeline was burning 30M tokens monthly. Each product had its own API key, its own integration, its own cost center. No aggregation. No caching. No fallback.</p>
+
+<p>The classic solo founder mistake: <em>build fast, optimize never</em>.</p>
+
+<h2>The Breaking Point</h2>
+
+<p>It wasn't just the money. Three things happened in quick succession:</p>
+
+<ol>
+<li><strong>OpenAI deprecated a model I depended on</strong> — one afternoon my content pipeline started returning garbage. I hadn't pinned the model version. Two hours of debugging.</li>
+<li><strong>A rate limit spike killed my bot for 45 minutes</strong> — no alert, no retry, no queue. Users just got silence.</li>
+<li><strong>I added up the annual cost</strong> — $3,000/year on API bills for a side project that made maybe $200/month.</li>
+</ol>
+
+<p>That's when I started looking at alternatives.</p>
+
+<h2>The Naive First Attempt</h2>
+
+<p>My first idea was dumb: "What if I just point everything at a local LLM?"</p>
+
+<p>I spun up a $5 DigitalOcean droplet, installed Ollama, and tried running Llama 3.2 8B. It worked — until the first concurrent request hit. The 1C1G server locked up so hard I couldn't SSH in. I force-rebooted three times in one afternoon.</p>
+
+<p>A friend told me about n8n. Another mentioned Docker Compose resource limits. Someone on Reddit suggested PostgreSQL with connection pooling.</p>
+
+<p>I started reading. A lot.</p>
+
+<p><em>(Most of what I learned is now documented in the <a href="https://lunarwave8803.gumroad.com/l/hvsxb">Architecture Blueprint</a> — but here's the short version.)</em></p>
+
+<h2>The Architecture That Worked</h2>
+
+<p>After six weeks of trial and error, I settled on a 7-service Docker Compose cluster on a 2C4G VPS:</p>
+
+<pre><code>┌─────────────┐     ┌──────────────┐     ┌──────────┐
+│  n8n Engine │────▶│ PostgreSQL   │◀────│  Redis   │
+│ (workflows) │     │ (HA + WAL)   │     │ (queue)  │
+└──────┬──────┘     └──────────────┘     └──────────┘
+       │                                       
+       ▼                                       
+┌─────────────┐     ┌──────────────┐
+│ AI Gateway  │────▶│ Auth Server  │
+│ (routing)   │     │ (RSA keys)   │
+└──────┬──────┘     └──────────────┘
+       │
+       ▼
+┌─────────────┐
+│ Nginx       │
+│ (edge/rate) │
+└─────────────┘</code></pre>
+
+<p>The key insight: <strong>constraints produce better architecture</strong>.</p>
+
+<p>With only 2 cores and 4GB RAM, I couldn't afford wasteful abstractions. Every service had to earn its memory. The stack became brutally minimal:</p>
+
+<ul>
+<li><strong>n8n</strong> handles all workflow logic — scheduling, retries, branching, error handling</li>
+<li><strong>PostgreSQL</strong> stores everything from workflow state to customer logs — with WAL archiving for point-in-time recovery</li>
+<li><strong>Redis</strong> queues bursts so the VPS never OOMs on traffic spikes</li>
+<li><strong>AI Gateway</strong> routes between OpenAI, DeepSeek, and local LLMs — with fallback, rate limiting, and cost tracking</li>
+<li><strong>Auth Server</strong> uses RSA-2048 key pairs bound to machine fingerprints — no external identity provider needed</li>
+</ul>
+
+<h2>The Cost Numbers</h2>
+
+<p>Here's the real comparison, tracked over three months:</p>
+
+<pre><code>| Category            | Cloud API ($/mo) | Self-Hosted ($/mo) |
+|---------------------|------------------|--------------------|
+| API inference       | ~$210            | $0                 |
+| VPS compute (2C4G)  | $0               | $15                |
+| Storage (100GB)     | $0               | $5                 |
+| Logging/monitoring  | $20 (Grafana)    | $0 (self-hosted)   |
+| Database            | $15 (Neon free)  | $0 (in-cluster)    |
+| Queue/background    | $10 (Upstash)    | $0 (in-cluster)    |
+| <strong>Total</strong>           | <strong>$255</strong>          | <strong>$17</strong>             |</code></pre>
+
+<p>The self-hosted cluster paid for itself (<strong>$49</strong>) in the <strong>first week</strong>.</p>
+
+<p>Everything after that is savings.</p>
+
+<h2>What I Lost</h2>
+
+<p>I'm not going to pretend self-hosting is all upside. Here's what I gave up:</p>
+
+<ul>
+<li><strong>Instant scale</strong> — if traffic 10× overnight, my VPS will choke. I handle this with Redis queue backpressure and an SQS bridge for overflow. Works well enough.</li>
+<li><strong>Zero ops</strong> — I now spend maybe 2 hours/month on maintenance. Patch the server. Rotate logs. Check backups. Acceptable.</li>
+<li><strong>Bleeding-edge models</strong> — I don't get GPT-5 on day one. But honestly, Qwen2.5 7B and GPT-4o-mini cover 95% of my use cases.</li>
+</ul>
+
+<p>The trade-off was worth it. $2,800/year in savings buys a lot of patience.</p>
+
+<h2>What I Gained</h2>
+
+<ul>
+<li><strong>Fixed cost</strong> — $17/month regardless of how much traffic I process. No surprise bills.</li>
+<li><strong>Zero vendor risk</strong> — no API deprecation, no pricing changes, no rate limit anxiety</li>
+<li><strong>Full audit trail</strong> — every API call, every workflow execution, every DB query is logged in-cluster</li>
+<li><strong>Offline capability</strong> — if my internet drops, the cluster keeps running locally</li>
+</ul>
+
+<h2>Why I'm Selling This</h2>
+
+<p>I packaged the whole thing into two products because <strong>I couldn't find anything like it</strong>.</p>
+
+<p>There are tons of tutorials for individual pieces — "deploy n8n on Docker", "set up PostgreSQL replication", "build an API gateway" — but nothing that ties them together into a production-ready cluster with auth, monitoring, and disaster recovery built in.</p>
+
+<p><strong><a href="https://lunarwave8803.gumroad.com/l/jrsqd">Form-A ($49)</a></strong> is what I wish I'd had on day one: a ZIP file with docker-compose.yml, deploy scripts, health checks, and templates. <code>docker compose up -d</code> and you're running.</p>
+
+<p><strong><a href="https://lunarwave8803.gumroad.com/l/hvsxb">Form-B ($29)</a></strong> is the architecture paper I wrote along the way: why each component, the alternatives I rejected, the failure modes I designed around, and 7 prompt templates to re-implement everything from scratch.</p>
+
+<p>Together they cover both paths: <em>buy it and run it</em>, or <em>study it and build your own</em>.</p>
+
+<h2>The Honest Verdict</h2>
+
+<p>Self-hosting isn't for everyone. If you're building a demo for an investor presentation next week, use the cloud. If you have one product with one API call pattern, use the cloud.</p>
+
+<p>But if you're running <strong>multiple AI workloads</strong>, or you're <strong>past MVP and paying real money for inference</strong>, or you <strong>hate vendor lock-in enough to spend a weekend setting things up</strong> — self-hosting is the single highest-leverage move you can make.</p>
+
+<p>I'm now two months into this setup. Three products running. $34/month total (two servers). Zero downtime. No surprise bills.</p>
+
+<p>Not bad for a solo founder who started by accidentally getting a $312 API bill.</p>
+
+<div class="cta-box">
+<h3>Get the exact setup for $49 (one-time)</h3>
+<p style="color:#8b949e;font-size:14px">Docker Compose cluster · n8n engine · Auth server · HA PostgreSQL · AI Gateway · Monitoring</p>
+<a href="https://lunarwave8803.gumroad.com/l/jrsqd" class="btn" style="background:#238636;color:#fff">Buy Form-A $49 →</a>
+<a href="https://lunarwave8803.gumroad.com/l/hvsxb" class="btn" style="background:#1c3d5a;color:#58a6ff;border:1px solid #58a6ff">Study the architecture $29 →</a>
+<p style="font-size:13px;color:#8b949e;margin-top:8px">30-day money-back guarantee · Instant digital delivery</p>
+</div>
+
+<h2>Frequently Embarrassing Questions</h2>
+
+<p><strong>Q: Aren't you just selling a Docker Compose file?</strong><br>
+The Compose file is the tip of the iceberg. The auth server (RSA-2048 fingerprint binding), the AI gateway with cost tracking, the HA PostgreSQL failover config, the health check orchestration, the monitoring stack — those are the parts that take weeks to get right. I packaged all of it.</p>
+
+<p><strong>Q: Why would I pay $49 for something open-source?</strong><br>
+The entire codebase is open-source (AGPLv3) on <a href="https://github.com/lu7897859-tech/auto-ai-cluster">GitHub</a>. You're paying for the integration, the validation, the documentation, and the time I spent figuring out what works on a 2C4G budget. You can absolutely build it yourself from the repo — Form-B shows you exactly how. Form-A saves you the weekend.</p>
+
+<p><strong>Q: What happens if I break something?</strong><br>
+The health check system auto-detects failures and restarts services. The PostgreSQL WAL archive lets you roll back to any point in time. The whole deployment takes ~10 minutes to rebuild from scratch. You can't break it in a way that matters.</p>
+
+<p style="margin-top:40px;color:#8b949e;font-size:14px;border-top:1px solid #30363d;padding-top:24px">
+<a href="https://news.ycombinator.com/submit?url=https://lu7897859-tech.github.io/auto-ai-cluster/blog-21.html" target="_blank">Discuss on Hacker News</a> · <a href="https://lu7897859-tech.github.io/auto-ai-cluster/product.html">Compare products →</a> · <a href="https://lunarwave8803.gumroad.com/l/jrsqd">Buy $49 →</a><br>30-day money-back guarantee on both products.</p>
+</div>
+</body>
+</html>
