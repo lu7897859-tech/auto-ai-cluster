@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Auto-AI-Cluster: Form-A vs Form-B — Which One Should You Buy?</title>
+<meta name="description" content="Form-A ($49) is a ready-to-deploy Docker Compose AI cluster. Form-B ($29) is an architecture blueprint PDF. Compare them and decide which fits your needs — or get both.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://lu7897859-tech.github.io/auto-ai-cluster/blog-19.html">
+<meta property="og:title" content="Auto-AI-Cluster: Form-A vs Form-B — Which One Should You Buy?">
+<meta property="og:description" content="Form-A ($49) is a ready-to-deploy Docker Compose AI cluster. Form-B ($29) is an architecture blueprint PDF. Compare and decide.">
+<meta property="og:url" content="https://lu7897859-tech.github.io/auto-ai-cluster/blog-19.html">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Auto-AI-Cluster: Form-A vs Form-B — Which One Should You Buy?",
+  "description": "Form-A ($49) is a ready-to-deploy Docker Compose AI cluster. Form-B ($29) is an architecture blueprint PDF. Compare them and decide.",
+  "datePublished": "2026-07-25",
+  "author": { "@type": "Person", "name": "Lu Guanghui" }
+}
+</script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0d1117;color:#c9d1d9;line-height:1.8;padding:40px 20px}
+.container{max-width:760px;margin:0 auto}
+h1{font-size:2rem;color:#f0f6fc;margin-bottom:8px}
+h2{font-size:1.3rem;color:#f0f6fc;margin:32px 0 12px;padding-bottom:6px;border-bottom:1px solid #30363d}
+h3{color:#f0f6fc;margin:20px 0 8px}
+p{margin:12px 0}
+code{background:#1c2128;padding:2px 6px;border-radius:4px;font-size:14px}
+pre{background:#161b22;padding:16px;border-radius:8px;overflow-x:auto;border:1px solid #30363d;margin:16px 0}
+pre code{background:none;padding:0}
+a{color:#58a6ff;text-decoration:none}
+a:hover{text-decoration:underline}
+.meta{color:#8b949e;font-size:14px;margin-bottom:24px}
+.back{margin-bottom:24px;display:inline-block;font-size:14px;color:#58a6ff}
+.price-box{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px 20px;margin:16px 0;display:inline-block}
+.price-box .price{font-size:1.5rem;font-weight:700;color:#f0f6fc}
+.price-box .tag{font-size:13px;color:#8b949e}
+.btn-buy{display:inline-block;padding:12px 28px;border-radius:8px;font-size:16px;font-weight:600;text-decoration:none;margin:8px 4px}
+.comparison-table{width:100%;border-collapse:collapse;margin:20px 0}
+.comparison-table th,.comparison-table td{padding:10px 14px;text-align:left;border-bottom:1px solid #30363d;font-size:14px}
+.comparison-table th{color:#8b949e;font-weight:600;background:#161b22}
+.comparison-table tr:hover{background:#1c2128}
+.check{color:#3fb950}
+.cross{color:#f85149}
+</style>
+</head>
+<body>
+<div class="container">
+<a href="https://lu7897859-tech.github.io/auto-ai-cluster/" class="back">← Back to Home</a>
+<h1>Auto-AI-Cluster: Form-A vs Form-B</h1>
+<p class="meta">📅 July 25, 2026 · ☕ 3 min read · 📷 <a href="https://lu7897859-tech.github.io/auto-ai-cluster/">Auto-AI-Cluster Project</a></p>
+
+<p>If you've landed on the <a href="product.html">product page</a>, you've seen two options: <strong>Form-A ($49)</strong> and <strong>Form-B ($29)</strong>. This post helps you decide which one is right for you.</p>
+
+<h2>TL;DR</h2>
+<ul>
+<li>Want a <strong>running cluster in 5 minutes</strong> → <strong>Form-A ($49)</strong></li>
+<li>Want to <strong>understand the architecture first</strong>, then build your own → <strong>Form-B ($29)</strong></li>
+<li>Want <strong>both</strong> → you should <strong>buy Form-B first</strong>, then Form-A (you'll appreciate the code much more)</li>
+</ul>
+
+<h2>Direct Comparison</h2>
+
+<table class="comparison-table">
+<tr><th>Feature</th><th>Form-A ($49)</th><th>Form-B ($29)</th></tr>
+<tr><td>Delivery</td><td>ZIP download</td><td>PDF download</td></tr>
+<tr><td>Size</td><td>~110 KB (code + configs)</td><td>~37 KB (9-page PDF)</td></tr>
+<tr><td>What you get</td><td>Docker Compose stack, auth server, n8n templates, deployment scripts</td><td>Architecture decision records, design rationale, re-implementation guide</td></tr>
+<tr><td>Time to value</td><td>~5 minutes (run docker compose up)</td><td>~1 afternoon (read + digest)</td></tr>
+<tr><td>Skill level</td><td>Can run Docker commands</td><td>Can understand system design</td></tr>
+<tr><td>Customization</td><td>Modify the code directly</td><td>Rebuild in any stack from the blueprint</td></tr>
+<tr><td>Vendor lock-in</td><td>Zero — open source stack</td><td>Zero — it's just ideas</td></tr>
+</table>
+
+<h2>Who Is Form-A For?</h2>
+<p>You're a <strong>developer, DevOps engineer, or indie hacker</strong> who wants a self-hosted AI cluster <em>today</em>. You don't want to design the architecture — you want a battle-tested stack you can deploy immediately:</p>
+<pre><code>git clone ... && cd auto-ai-cluster
+# edit your .env with API keys
+docker compose up -d
+# Your AI cluster is now running</code></pre>
+<p>Included: n8n (workflow engine), auth server (RSA key rotation), HA PostgreSQL (auto-failover), AI API gateway (rate limiting + audit), Prometheus + Grafana (monitoring).</p>
+
+<h2>Who Is Form-B For?</h2>
+<p>You're an <strong>architect, CTO, or senior engineer</strong> who refuses to deploy code you don't fully understand. You want to know <em>why</em> each component was chosen, what the alternatives were, and how to make informed trade-offs:</p>
+<ul>
+<li>Why n8n and not Temporal or a custom solution?</li>
+<li>Why Docker Compose and not K8s for 1-10 nodes?</li>
+<li>How does the RSA key rotation strategy work?</li>
+<li>What's the HA PostgreSQL failover design?</li>
+<li>How do you scale from 1 node to 100 nodes?</li>
+</ul>
+
+<h2>The Smartest Approach: Buy Both</h2>
+<p>Total: <strong>$78</strong>. Start with Form-B (read over a weekend), then deploy with Form-A. You'll understand every line of code, know exactly when to deviate from the defaults, and be confident in production.</p>
+
+<div style="text-align:center;margin:40px 0">
+  <a href="https://lunarwave8803.gumroad.com/l/hvsxb" class="btn-buy" style="background:#1c3d5a;color:#58a6ff;border:1px solid #58a6ff">Buy Form-B — $29</a>
+  <a href="https://lunarwave8803.gumroad.com/l/jrsqd" class="btn-buy" style="background:#238636;color:#fff">Buy Form-A — $49</a>
+</div>
+
+<h2>What About the Enterprise Edition?</h2>
+<p>The Enterprise Edition (multi-tenant auth, K8s orchestration, distributor tracking) is in early design. It's not yet available. Both Form-A and Form-B purchasers will get early access and a discount when it launches.</p>
+
+<h2>Summary</h2>
+<ul>
+<li><strong>Form-A + Form-B together</strong> = the complete package. Know why it works and have it running.</li>
+<li><strong>Form-A alone</strong> = practical, fast, production-ready.</li>
+<li><strong>Form-B alone</strong> = theoretical, portable to any stack, zero lock-in.</li>
+</ul>
+
+<p style="margin-top:40px;color:#8b949e;font-size:14px;border-top:1px solid #30363d;padding-top:24px">
+<a href="https://github.com/lu7897859-tech/auto-ai-cluster">GitHub →</a> · <a href="https://lu7897859-tech.github.io/auto-ai-cluster/">Home →</a> · 
+<a href="https://lunarwave8803.gumroad.com/l/jrsqd">Buy Form-A $49 →</a> · <a href="https://lunarwave8803.gumroad.com/l/hvsxb">Buy Form-B $29 →</a>
+<br>30-day money-back guarantee on both products.</p>
+</div>
+</body>
+</html>
