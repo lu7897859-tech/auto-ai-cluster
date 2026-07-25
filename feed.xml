@@ -3,49 +3,56 @@
 <title>Auto-AI-Cluster Blog</title>
 <subtitle>Self-hosted autonomous AI cluster frameworks and tutorials</subtitle>
 <link href="https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/index.html"/>
-<updated>2026-07-25T16:00:00Z</updated>
+<updated>2026-07-25T19:30:00Z</updated>
 <author><name>Auto-AI-Cluster Team</name></author>
 <id>https://lu7897859-tech.github.io/auto-ai-cluster/feed.xml</id>
 <entry>
 <title>20 — Self-Hosted AI in 2026: The Year the Pendulum Swung Back</title>
 <link href="https://lu7897859-tech.github.io/auto-ai-cluster/blog-20.html"/>
 <id>https://lu7897859-tech.github.io/auto-ai-cluster/blog-20.html</id>
-<updated>2026-07-25T16:00:00Z</updated>
+<updated>2026-07-25T19:30:00Z</updated>
 <summary>Cloud API costs tripled, local LLMs got good, Docker Compose made deployments trivial. Why 2026 is the year self-hosted AI became viable for indie hackers.</summary>
 </entry>
 <entry>
 <title>19 — Form-A vs Form-B: Which Auto-AI-Cluster Product Should You Buy?</title>
 <link href="https://lu7897859-tech.github.io/auto-ai-cluster/blog-19.html"/>
 <id>https://lu7897859-tech.github.io/auto-ai-cluster/blog-19.html</id>
-<updated>2026-07-25T12:00:00Z</updated>
+<updated>2026-07-25T19:30:00Z</updated>
 <summary>Compare Form-A code product () and Form-B architecture blueprint (). Three scenarios — buy Form-A, Form-B, or both.</summary>
 </entry>
 <entry>
 <title>18 — AlertManager for 2C4G AI Clusters: Stop Missing Critical Alerts</title>
 <link href="https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/18-alertmanager-2c4g-alerts.html"/>
 <id>https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/18-alertmanager-2c4g-alerts.html</id>
-<updated>2026-07-25T00:00:00Z</updated>
+<updated>2026-07-25T19:30:00Z</updated>
 <summary>AlertManager configuration for small self-hosted AI clusters with Slack/email notifications.</summary>
 </entry>
 <entry>
 <title>17 — Centralized Logging: Loki, Promtail &amp; Grafana on 2C4G</title>
 <link href="https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/17-loki-promtail-centralized-logging-2c4g.html"/>
 <id>https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/17-loki-promtail-centralized-logging-2c4g.html</id>
-<updated>2026-07-25T00:00:00Z</updated>
+<updated>2026-07-25T19:30:00Z</updated>
 <summary>Set up Loki + Promtail + Grafana for centralized logging on a 2C4G VPS in under 30 minutes.</summary>
 </entry>
 <entry>
 <title>16 — Automated Backup &amp; Recovery for Your 2C4G AI Cluster</title>
 <link href="https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/16-backup-recovery-2c4g.html"/>
 <id>https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/16-backup-recovery-2c4g.html</id>
-<updated>2026-07-24T00:00:00Z</updated>
+<updated>2026-07-25T19:30:00Z</updated>
 <summary>Automated backup and recovery strategy for your self-hosted AI cluster on a minimal VPS budget.</summary>
 </entry>
 <entry>
 <title>15 — Rate Limiting &amp; API Security for 2C4G AI Clusters</title>
 <link href="https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/15-rate-limiting-api-security-2c4g.html"/>
 <id>https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/15-rate-limiting-api-security-2c4g.html</id>
-<updated>2026-07-21T00:00:00Z</updated>
+<updated>2026-07-25T19:30:00Z</updated>
 <summary>Rate limiting and API security patterns for self-hosted AI agent clusters on low-resource VPS.</summary>
+</entry>
+<entry>
+<title>21 — I Cut My AI Bill from /mo to /mo by Going Self-Hosted</title>
+<link href="https://lu7897859-tech.github.io/auto-ai-cluster/blog-21.html"/>
+<id>https://lu7897859-tech.github.io/auto-ai-cluster/blog-21.html</id>
+<updated>2026-07-25T19:30:00Z</updated>
+<summary>A solo founder story: migrating from cloud AI APIs to a self-hosted Docker Compose cluster on a  VPS. Real numbers, real lessons, ,800/year in savings.</summary>
 </entry>
 </feed>
