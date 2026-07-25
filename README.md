@@ -117,3 +117,13 @@ This project was launched using the **Launch Torch** platform bypass engine — 
 - [📖 Case Study: How Auto-AI-Cluster passed the Great Filter](https://github.com/lu7897859-tech/launch-torch/docs/CASE-STUDY-auto-ai-cluster.md)
 - [🔥 Launch Torch engine](https://github.com/lu7897859-tech/launch-torch)
 - [📦 Product page](https://lu7897859-tech.github.io/launch-torch/product.html)
+
+## How to Buy
+
+- **Form-A (Personal License — )**: Docker Compose one-click deploy. [Buy on Gumroad →](https://lunarwave8803.gumroad.com/l/jrsqd)
+- **Form-B (Architecture Blueprint — )**: 9-page PDF with full architecture decisions. [Buy on Gumroad →](https://lunarwave8803.gumroad.com/l/hvsxb)
+- **Bundle (Both — )**: Buy Form-A, get the blueprint included as bonus.
+
+> Both come with a 30-day money-back guarantee. Instant digital delivery via Gumroad.
+
+> Read the buying guide: [Form-A vs Form-B →](https://lu7897859-tech.github.io/auto-ai-cluster/blog-19.html)
