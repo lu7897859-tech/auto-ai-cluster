@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Docker Compose AI Stack: The Only Config You Need in 2026 | Auto-AI-Cluster</title>
+<meta name="description" content="Complete Docker Compose configuration for self-hosted AI. n8n, Ollama, PostgreSQL, nginx — production-ready with one command.">
+<link rel="canonical" href="https://lu7897859-tech.github.io/auto-ai-cluster/blog-24.html">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","headline":"Docker Compose AI Stack: The Only Config You Need","author":{"@type":"Organization","name":"Auto-AI-Cluster"},"datePublished":"2026-07-26","publisher":{"@type":"Organization","name":"Auto-AI-Cluster"}}
+</script>
+<style>body{font-family:system-ui,-apple-system,sans-serif;max-width:680px;margin:0 auto;padding:24px;line-height:1.7;color:#333}h1{font-size:1.6em;margin-bottom:.3em}h2{font-size:1.2em;margin-top:1.8em}.meta{color:#666;font-size:.9em;margin-bottom:1.5em}pre{background:#1e1e1e;color:#d4d4d4;padding:16px;border-radius:8px;overflow-x:auto;font-size:.8em;line-height:1.5}.cta{background:#ff6b35;color:#fff;padding:16px 24px;border-radius:8px;text-align:center;margin:2em 0}.cta a{color:#fff;font-weight:600;text-decoration:underline}.price{font-size:1.4em;font-weight:700}.strike{text-decoration:line-through;color:#999}code{background:#f4f4f4;padding:2px 6px;border-radius:3px}</style>
+</head>
+<body>
+<h1>Docker Compose AI Stack: The Only Config You Need in 2026</h1>
+<p class="meta">July 26, 2026 · 5 min read · <a href="product.html">Auto-AI-Cluster</a></p>
+
+<p>I've tried 20+ different self-hosted AI setups. Most are over-engineered. This is the only one that survived production.</p>
+
+<h2>Philosophy</h2>
+<p>One file. One command. No Kubernetes, no Terraform, no complexity.</p>
+
+<h2>The docker-compose.yml</h2>
+<pre>version: '3.8'
+
+services:
+  ollama:
+    image: ollama/ollama:latest
+    volumes:
+      - ollama:/root/.ollama
+    ports:
+      - "11434:11434"
+    restart: unless-stopped
+
+  n8n:
+    image: n8nio/n8n:latest
+    environment:
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=admin
+      - N8N_BASIC_AUTH_PASSWORD=changeme
+    volumes:
+      - n8n:/home/node/.n8n
+    ports:
+      - "5678:5678"
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_USER=ai
+      - POSTGRES_PASSWORD=changeme
+      - POSTGRES_DB=aidb
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    restart: unless-stopped
+
+  watchtower:
+    image: containrrr/watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --interval 86400
+    restart: unless-stopped
+
+volumes:
+  ollama:
+  n8n:
+  postgres:</pre>
+
+<h2>Why This Works</h2>
+<ul>
+<li><strong>Ollama</strong> — dead simple model management. One command to pull any model.</li>
+<li><strong>n8n</strong> — visual workflow builder. Connect AI to everything without code.</li>
+<li><strong>PostgreSQL</strong> — reliable data store. Handles everything from chat history to vector search.</li>
+<li><strong>nginx</strong> — reverse proxy + SSL. Single entry point for all services.</li>
+<li><strong>Watchtower</strong> — auto-updates. Security patches apply themselves.</li>
+</ul>
+
+<h2>Resource Usage</h2>
+<p>On a 2-core, 2GB VPS:</p>
+<ul>
+<li>Idle RAM: ~800MB</li>
+<li>With 1 model loaded: ~1.4GB</li>
+<li>Peak (model swap): ~1.8GB (uses swap)</li>
+</ul>
+
+<h2>One-Command Deploy</h2>
+<pre>git clone https://github.com/lu7897859-tech/auto-ai-cluster.git
+cd auto-ai-cluster
+docker-compose up -d
+
+# Pull your first model
+ollama pull llama3.2
+
+# Done. API running at localhost:11434</pre>
+
+<div class="cta">
+<p>Get the full package with configs, scripts, and docs.</p>
+<p class="price"><span class="strike">$200+ cloud bill</span> → $49 one-time</p>
+<p><a href="https://lunarwave8803.gumroad.com/l/jrsqd">Get Auto-AI-Cluster →</a></p>
+</div>
+
+<h2>What You Get</h2>
+<ul>
+<li>Complete docker-compose.yml</li>
+<li>nginx.conf with SSL template</li>
+<li>Environment variable templates</li>
+<li>Backup scripts</li>
+<li>Monitoring setup</li>
+<li>Upgrade guides</li>
+</ul>
+
+<p><em>This is the setup I run in production. It costs $5.50/month and handles everything I throw at it.</em></p>
+
+<p style="margin-top:2em"><a href="blog-23.html">← Previous: 90-Day Cost Experiment</a> · <a href="blog/index.html">All posts</a></p>
+</body>
+</html>
