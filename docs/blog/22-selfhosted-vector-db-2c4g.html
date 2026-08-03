@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>22 — Self-Hosted Vector Database on 2C4G: Semantic Search Without Cloud Lock-in | Auto-AI-Cluster Blog</title>
+<meta name="description" content="Add semantic search to your 2C4G AI cluster with Qdrant or Chroma. Minimal RAM, zero cloud dependency, and a working Docker Compose recipe.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/">
+<meta property="og:image" content="https://lu7897859-tech.github.io/auto-ai-cluster/og-image.svg">
+<style>
+body{max-width:800px;margin:0 auto;padding:20px;font-family:-apple-system,sans-serif;line-height:1.8;color:#c9d1d9;background:#0d1117}
+h1{color:#58a6ff;border-bottom:1px solid #30363d;padding-bottom:8px}
+h2{color:#79c0ff;margin-top:32px}
+h3{color:#d2a8ff;margin-top:24px}
+a{color:#58a6ff}
+pre{background:#161b22;padding:14px;border-radius:6px;overflow-x:auto;font-size:14px;border:1px solid #30363d}
+code{background:#161b22;padding:2px 6px;border-radius:3px;font-size:14px}
+pre code{background:none;padding:0}
+table{border-collapse:collapse;width:100%;margin:16px 0}
+th,td{border:1px solid #30363d;padding:8px 12px;text-align:left}
+th{background:#161b22}
+small{color:#8b949e}
+.tag{display:inline-block;background:#1f2937;color:#58a6ff;padding:2px 10px;border-radius:12px;font-size:13px;margin-right:6px}
+nav{margin-bottom:20px;font-size:14px}
+nav a{color:#8b949e;text-decoration:none}
+nav a:hover{color:#58a6ff}
+hr{border:none;border-top:1px solid #30363d}
+ul,ol{padding-left:24px}
+li{margin:4px 0}
+p{margin:14px 0}
+</style>
+</head>
+<body>
+<nav><a href="https://lu7897859-tech.github.io/auto-ai-cluster/">Home</a> &middot; <a href="https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/index.html">Blog</a></nav>
+
+<h1>22 — Self-Hosted Vector Database on 2C4G: Semantic Search Without Cloud Lock-in</h1>
+<p><small>Published 2026-08-03 &middot; 12 min read</small></p>
+
+<h1>22 — Self-Hosted Vector Database on 2C4G: Semantic Search Without Cloud Lock-in</h1>
+
+<strong>2026-08-03</strong>
+
+<p>Vector databases are the backbone of AI applications—RAG, semantic search, recommendation systems. But Pinecone, Weaviate Cloud, and Zilliz all charge per-GB and lock you into their APIs. If you're running a 2C4G VPS, you don't need cloud-managed vectors. You need <strong>Qdrant or Chroma in a container</strong>.</p>
+
+<h2>Why Self-Hosted Vector DB on 2C4G Works</h2>
+
+<strong>Memory is cheap.</strong> A 4GB VPS can hold millions of vectors if you're smart about quantization.
+
+<strong>Latency matters more than RAM.</strong> Local vector search is 10-50x faster than cloud APIs for batch queries.
+
+<strong>No API keys to rotate.</strong> No rate limits. No egress fees.
+
+<strong>The trade-off</strong>: You trade managed backups and infinite scaling for operational simplicity and cost predictability. On a 2C4G box, that's the right trade.
+
+<h2>The Candidates: Qdrant vs Chroma vs Milvus Lite</h2>
+
+<tr><td>Feature</td><td>Qdrant</td><td>Chroma</td><td>Milvus Lite</td></tr>
+
+<tr><td>Min RAM</td><td>512MB</td><td>256MB</td><td>1GB</td></tr>
+<tr><td>Docker image size</td><td>150MB</td><td>180MB</td><td>400MB+</td></tr>
+<tr><td>Quantization</td><td>Scalar, Product</td><td>None</td><td>Scalar</td></tr>
+<tr><td>API</td><td>REST + gRPC</td><td>REST</td><td>REST</td></tr>
+<tr><td>License</td><td>Apache 2.0</td><td>Apache 2.0</td><td>Apache 2.0</td></tr>
+<tr><td>Best for</td><td>Production 2C4G</td><td>Dev/prototyping</td><td>Embedded ML</td></tr>
+
+<strong>Winner for 2C4G</strong>: Qdrant with scalar quantization. You get 4x compression with <5% recall loss, and the container idles at ~200MB RAM.
+
+<h2>Docker Compose Setup for Qdrant on 2C4G</h2>
+
+<pre><code><h1>docker-compose.vector.yml</h1>
+version: "3.8"
+services:
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: qdrant
+    restart: unless-stopped
+    ports:
+      - "6333:6333"  # REST API
+      - "6334:6334"  # gRPC API
+    volumes:
+      - qdrant_storage:/qdrant/storage
+    environment:
+      - QDRANT__STORAGE__SNAPSHOTS_PATH=/qdrant/snapshots
+    deploy:
+      resources:
+        limits:
+          memory: 768M  # Hard cap for 2C4G
+        reservations:
+          memory: 256M  # Minimum guaranteed
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:6333/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  qdrant_storage:
+<pre><code>
+Deploy with:
+<pre><code>docker compose -f docker-compose.vector.yml up -d
+<pre><code>
+<strong>Memory budget</strong>: 768MB limit leaves 3GB for n8n, Postgres, and your app stack. If you hit the limit, Qdrant will OOM—but with quantization, you won't.
+
+<h2>Enabling Scalar Quantization</h2>
+
+Scalar quantization reduces vector size from 4 bytes (float32) to 1 byte (uint8) per dimension. For a 1536-dim OpenAI embedding, that's 6KB → 1.5KB per vector.
+
+<pre><code><h1>Create a collection with quantization enabled</h1>
+curl -X PUT "http://localhost:6333/collections/ai_docs" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "vectors": {
+      "size": 1536,
+      "distance": "Cosine",
+      "quantization_config": {
+        "scalar": {
+          "type": "int8",
+          "quantile": 0.99,
+          "always_ram": true
+        }
+      }
+    }
+  }'
+<pre><code>
+<strong>Result</strong>: 1M vectors (1536-dim) fits in ~1.5GB RAM instead of 6GB.
+
+<h2>Integrating with n8n Workflows</h2>
+
+Your AI agent cluster can now query Qdrant directly via HTTP Request nodes.
+
+<h3>Example: Semantic Document Search Flow</h3>
+
+1. <strong>Trigger</strong>: Telegram message with query text
+2. <strong>Embed</strong>: Call OpenAI <code>/embeddings</code> API (or local embedding model)
+3. <strong>Search</strong>: POST to <code>http://qdrant:6333/collections/ai_docs/points/search</code>
+4. <strong>Respond</strong>: Format top-3 results, reply via Telegram
+
+<pre><code>{
+  "vector": [0.012, -0.234, ...],  // 1536 floats from embedding API
+  "limit": 3,
+  "with_payload": true
+}
+<pre><code>
+<strong>Latency</strong>: 10-30ms for 100K vectors. Compare to Pinecone's 100-200ms + network overhead.
+
+<h2>Backup Strategy for 2C4G</h2>
+
+Qdrant stores vectors in <code>/qdrant/storage</code>. Use Docker volume snapshots or the built-in snapshot API:
+
+<pre><code><h1>Create snapshot</h1>
+curl -X POST "http://localhost:6333/collections/ai_docs/snapshots"
+
+<h1>List snapshots</h1>
+curl "http://localhost:6333/collections/ai_docs/snapshots"
+
+<h1>Download for offsite backup</h1>
+curl "http://localhost:6333/collections/ai_docs/snapshots/{snapshot_name}" \
+  -o snapshot.tar
+<pre><code>
+<strong>3-2-1 backup rule</strong>:
+- 3 copies: live data + local snapshot + offsite tar
+- 2 media: Docker volume + tar file
+- 1 offsite: rsync to backup server or S3-compatible bucket
+
+<h2>When to Upgrade from 2C4G</h2>
+
+You'll hit the wall when:
+- Collection size > 2M vectors (even with quantization)
+- Query latency > 500ms (concurrent requests pile up)
+- RAM usage > 90% sustained (OOM risk)
+
+<strong>Upgrade path</strong>: Move to a 4C8G VPS ($20/mo) and increase Qdrant's memory limit to 2GB. Or shard collections across multiple 2C4G instances.
+
+<h2>Cost Comparison: Self-Hosted vs Cloud Vector DB</h2>
+
+<tr><td>Option</td><td>1M vectors (1536-dim)</td><td>Latency</td><td>Features</td></tr>
+
+<tr><td>Pinecone Starter</td><td>$70/mo</td><td>100-200ms</td><td>Managed, auto-scaling</td></tr>
+<tr><td>Weaviate Cloud</td><td>$25/mo + usage</td><td>80-150ms</td><td>GraphQL, modules</td></tr>
+<tr><td>Qdrant Cloud</td><td>Free tier 1GB</td><td>50-100ms</td><td>Same API as self-hosted</td></tr>
+<tr><td><strong>Self-hosted Qdrant</strong></td><td><strong>$5.5/mo (VPS)</strong></td><td><strong>10-30ms</strong></td><td>Full control, no limits</td></tr>
+
+<strong>Break-even</strong>: At 500K vectors, self-hosted saves $150-600/year compared to managed services.
+
+<h2>Summary: The 2C4G Vector Stack</h2>
+
+- <strong>Engine</strong>: Qdrant with scalar quantization
+- <strong>Memory</strong>: 768MB container limit, ~256MB idle
+- <strong>Capacity</strong>: 1-2M vectors (1536-dim) on 4GB RAM
+- <strong>Latency</strong>: 10-30ms search, local-only
+- <strong>Cost</strong>: Included in your $5.5/mo VPS
+
+If you're building an AI agent cluster, semantic search isn't optional—it's infrastructure. And on a 2C4G VPS, Qdrant is the right tool for the job.
+
+<hr>
+
+<strong>Next step</strong>: Add the <code>docker-compose.vector.yml</code> to your stack, restart with <code>docker compose up -d</code>, and point your n8n HTTP Request nodes at <code>http://qdrant:6333</code>. Your cluster now has memory—semantic memory.
+
+
+
+<hr>
+<footer><p><small>Part of <a href="https://github.com/lu7897859-tech/auto-ai-cluster">Auto-AI-Cluster</a>. Published 2026-08-03.</small></p></footer>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"22 — Self-Hosted Vector Database on 2C4G: Semantic Search Without Cloud Lock-in","datePublished":"2026-08-03","author":{"@type":"Person","name":"Auto-AI-Cluster"},"description":"Add semantic search to your 2C4G AI cluster with Qdrant or Chroma. Minimal RAM, zero cloud dependency, and a working Docker Compose recipe."}</script>
+</body>
+</html>

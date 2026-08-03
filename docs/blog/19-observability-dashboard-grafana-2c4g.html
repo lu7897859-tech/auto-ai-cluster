@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>19 — Building a Unified Observability Dashboard for Your 2C4G AI Cluster | Auto-AI-Cluster Blog</title>
+<meta name="description" content="Build a unified Grafana observability dashboard for your 2C4G AI cluster. Metrics, logs, and alerts in one view — zero additional RAM.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/">
+<meta property="og:image" content="https://lu7897859-tech.github.io/auto-ai-cluster/og-image.svg">
+<style>
+body{max-width:800px;margin:0 auto;padding:20px;font-family:-apple-system,sans-serif;line-height:1.8;color:#c9d1d9;background:#0d1117}
+h1{color:#58a6ff;border-bottom:1px solid #30363d;padding-bottom:8px}
+h2{color:#79c0ff;margin-top:32px}
+h3{color:#d2a8ff;margin-top:24px}
+a{color:#58a6ff}
+pre{background:#161b22;padding:14px;border-radius:6px;overflow-x:auto;font-size:14px;border:1px solid #30363d}
+code{background:#161b22;padding:2px 6px;border-radius:3px;font-size:14px}
+pre code{background:none;padding:0}
+table{border-collapse:collapse;width:100%;margin:16px 0}
+th,td{border:1px solid #30363d;padding:8px 12px;text-align:left}
+th{background:#161b22}
+small{color:#8b949e}
+.tag{display:inline-block;background:#1f2937;color:#58a6ff;padding:2px 10px;border-radius:12px;font-size:13px;margin-right:6px}
+nav{margin-bottom:20px;font-size:14px}
+nav a{color:#8b949e;text-decoration:none}
+nav a:hover{color:#58a6ff}
+hr{border:none;border-top:1px solid #30363d}
+ul,ol{padding-left:24px}
+li{margin:4px 0}
+p{margin:14px 0}
+</style>
+</head>
+<body>
+<nav><a href="https://lu7897859-tech.github.io/auto-ai-cluster/">Home</a> &middot; <a href="https://lu7897859-tech.github.io/auto-ai-cluster/docs/blog/index.html">Blog</a></nav>
+
+<h1>19 — Building a Unified Observability Dashboard for Your 2C4G AI Cluster</h1>
+<p><small>Published 2026-07-26 &middot; 10 min read</small></p>
+
+<h1>19 — Building a Unified Observability Dashboard for Your 2C4G AI Cluster</h1>
+
+<strong>2026-07-26</strong> | 2C4G AI Cluster Series
+
+<p>You now have Prometheus scraping metrics, Loki collecting logs, and AlertManager firing alerts. But jumping between three UIs at 2 AM when something breaks is not survival-first architecture.</p>
+
+<p>You need a <strong>single pane of glass</strong>.</p>
+
+<p>This post shows how to build a unified observability dashboard in Grafana that surfaces everything — metrics, logs, and alerts — in one view, optimized for the 2C4G resource constraint.</p>
+
+<hr>
+
+<h2>Why Grafana as the Hub?</h2>
+
+<p>Grafana is already running in your monitoring stack (from blog #14). It can query:</p>
+
+- <strong>Prometheus</strong> for metrics (CPU, memory, request rates)
+- <strong>Loki</strong> for logs (error traces, container output)
+- <strong>AlertManager</strong> for active alerts
+
+<p>All three datasources, one UI, zero additional RAM.</p>
+
+<hr>
+
+<h2>The 2C4G Dashboard Philosophy</h2>
+
+<p>On a small VPS, your dashboard must be <strong>opinionated</strong>. Every panel costs browser rendering time and cognitive load. We build four panels, no more:</p>
+
+<tr><td>Panel</td><td>Data Source</td><td>Purpose</td></tr>
+
+<tr><td>Cluster Health</td><td>Prometheus</td><td>Is the system alive?</td></tr>
+<tr><td>Resource Pressure</td><td>Prometheus</td><td>Are we running out of RAM/disk?</td></tr>
+<tr><td>Error Stream</td><td>Loki</td><td>What broke, and when?</td></tr>
+<tr><td>Active Alerts</td><td>AlertManager</td><td>What needs my attention now?</td></tr>
+
+<hr>
+
+<h2>Step 1: Import the Dashboard</h2>
+
+<p>Create <code>grafana/dashboards/2c4g-overview.json</code>:</p>
+
+<pre><code>{
+  "dashboard": {
+    "title": "2C4G Cluster Overview",
+    "tags": ["auto-ai-cluster", "2c4g"],
+    "timezone": "browser",
+    "panels": [
+      {
+        "title": "Cluster Health",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "up{job=\"docker\"}",
+            "legendFormat": "{{instance}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "green", "value": 1}
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 4, "w": 12, "x": 0, "y": 0}
+      },
+      {
+        "title": "Memory Usage %",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "(1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100",
+            "legendFormat": "Memory %"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "max": 100,
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": 0},
+                {"color": "yellow", "value": 70},
+                {"color": "red", "value": 85}
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 4}
+      },
+      {
+        "title": "Disk Usage %",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "(1 - (node_filesystem_avail_bytes{fstype!=\"tmpfs\"} / node_filesystem_size_bytes{fstype!=\"tmpfs\"})) * 100",
+            "legendFormat": "{{mountpoint}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "max": 100
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 4}
+      },
+      {
+        "title": "Recent Errors",
+        "type": "logs",
+        "datasource": "Loki",
+        "targets": [
+          {
+            "expr": "{job=\"docker\"} |= \"error\" or \"exception\" or \"fatal\"",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 12}
+      },
+      {
+        "title": "Active Alerts",
+        "type": "table",
+        "datasource": "AlertManager",
+        "targets": [
+          {
+            "expr": "ALERTS{alertstate=\"firing\"}",
+            "format": "table"
+          }
+        ],
+        "gridPos": {"h": 6, "w": 24, "x": 0, "y": 20}
+      }
+    ]
+  }
+}
+<pre><code>
+Mount this into your Grafana container:
+
+<pre><code>grafana:
+  volumes:
+    - ./grafana/dashboards:/etc/grafana/provisioning/dashboards
+    - ./grafana/datasources:/etc/grafana/provisioning/datasources
+<pre><code>
+<hr>
+
+<h2>Step 2: Provision Datasources Automatically</h2>
+
+Create <code>grafana/datasources/datasources.yml</code>:
+
+<pre><code>apiVersion: 1
+datasources:
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    isDefault: true
+
+  - name: Loki
+    type: loki
+    access: proxy
+    url: http://loki:3100
+
+  - name: AlertManager
+    type: alertmanager
+    access: proxy
+    url: http://alertmanager:9093
+<pre><code>
+Grafana loads these on startup. No manual clicking.
+
+<hr>
+
+<h2>Step 3: The One-Page Drill</h2>
+
+When your phone buzzes with a Telegram alert at 2 AM, this is your workflow:
+
+1. <strong>Open Grafana</strong> → Cluster Health panel: green or red?
+2. <strong>Red?</strong> → Active Alerts panel: what's firing?
+3. <strong>Memory alert?</strong> → Resource Pressure panel: which service spiked?
+4. <strong>Service unknown?</strong> → Error Stream panel: search <code>{service="X"} |= "error"</code>
+
+Four panels. Four steps. Under 60 seconds to root cause.
+
+<hr>
+
+<h2>Step 4: Mobile Optimization</h2>
+
+Grafana's default UI is unusable on mobile. Add this to your dashboard JSON:
+
+<pre><code>"refresh": "10s",
+"time": {"from": "now-1h", "to": "now"}
+<pre><code>
+And bookmark the <strong>kiosk mode</strong> URL:
+
+<pre><code>https://your-grafana.com/d/2c4g-overview?kiosk=tv&refresh=10s
+<pre><code>
+This loads a full-screen, auto-refreshing dashboard with no navigation chrome. Perfect for a wall-mounted tablet or phone bookmark.
+
+<hr>
+
+<h2>Resource Impact</h2>
+
+<tr><td>Component</td><td>Additional RAM</td><td>Additional CPU</td></tr>
+
+<tr><td>Grafana dashboard rendering</td><td>0 MB (already running)</td><td>~2% during query</td></tr>
+<tr><td>JSON dashboard file</td><td>Disk only (~5 KB)</td><td>0</td></tr>
+<tr><td>Auto-refresh (10s)</td><td>0</td><td>~0.5% per refresh</td></tr>
+
+<strong>Net cost: zero.</strong>
+
+<hr>
+
+<h2>Alert → Dashboard Correlation</h2>
+
+The Telegram alert from blog #18 should include a direct link:
+
+<pre><code>🚨 MEMORY CRITICAL
+
+Memory usage is 96%. Immediate action required.
+
+Dashboard: https://your-grafana.com/d/2c4g-overview?var-service=n8n
+<pre><code>
+One tap from alert to context.
+
+<hr>
+
+<h2>Summary Checklist</h2>
+
+- [ ] Create <code>grafana/dashboards/2c4g-overview.json</code> with 5 panels
+- [ ] Create <code>grafana/datasources/datasources.yml</code> for Prometheus, Loki, AlertManager
+- [ ] Mount both into Grafana container via <code>docker-compose.yml</code>
+- [ ] Bookmark kiosk mode URL on your phone
+- [ ] Update AlertManager Telegram template to include dashboard link
+- [ ] Test: trigger a test alert, verify dashboard shows firing state
+
+Your 2C4G cluster now has a mission control center. Four panels. One URL. Zero additional RAM.
+
+<hr>
+
+*Part of the <a href="https://github.com/lu7897859-tech/auto-ai-cluster">Auto-AI-Cluster</a> series. Deploy resilient, affordable AI infrastructure — one post at a time.*
+
+
+
+<hr>
+<footer><p><small>Part of <a href="https://github.com/lu7897859-tech/auto-ai-cluster">Auto-AI-Cluster</a>. Published 2026-07-26.</small></p></footer>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"19 — Building a Unified Observability Dashboard for Your 2C4G AI Cluster","datePublished":"2026-07-26","author":{"@type":"Person","name":"Auto-AI-Cluster"},"description":"Build a unified Grafana observability dashboard for your 2C4G AI cluster. Metrics, logs, and alerts in one view — zero additional RAM."}</script>
+</body>
+</html>
